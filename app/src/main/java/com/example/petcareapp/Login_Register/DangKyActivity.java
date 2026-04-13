@@ -6,55 +6,69 @@ import android.util.Patterns;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petcareapp.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
-
 import com.google.firebase.auth.FirebaseAuth;
 
 
 
 public class DangKyActivity extends AppCompatActivity {
 
-    TextInputEditText edtUsername, edtPassword, edtGmail;
-    MaterialButton btnRegister;
-    FirebaseAuth mAuth;
+    private TextInputEditText edtUsername, edtPassword, edtGmail;
+    private MaterialButton btnRegister;
+    private FirebaseAuth mAuth;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dangky);
 
+        // 🔗 ánh xạ view
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         edtGmail = findViewById(R.id.edtGmail);
         btnRegister = findViewById(R.id.btnRegister);
+        TextView tvLogin = findViewById(R.id.tvLogin); // nút quay lại login
 
-        TextView tvLogin = findViewById(R.id.tvLogin);
-
-        tvLogin.setOnClickListener(v -> {
-            startActivity(new Intent(this, DangNhapActivity.class));
-        });
-
-
+        // 🔥 Firebase
         mAuth = FirebaseAuth.getInstance();
 
+        // 👉 quay lại màn đăng nhập
+        tvLogin.setOnClickListener(v -> {
+            startActivity(new Intent(this, DangNhapActivity.class));
+            finish();
+        });
+
+        // 👉 xử lý đăng ký
         btnRegister.setOnClickListener(v -> registerUser());
-
-
     }
 
     private void registerUser() {
         String username = edtUsername.getText().toString().trim();
+        String email = edtGmail.getText().toString().trim();
         String password = edtPassword.getText().toString().trim();
-        String input = edtGmail.getText().toString().trim();
 
-        // 🔎 Validate
+        // ❗ validate
         if (username.isEmpty()) {
             edtUsername.setError("Nhập tên đăng nhập");
+            return;
+        }
+
+        if (email.isEmpty()) {
+            edtGmail.setError("Nhập email");
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            edtGmail.setError("Email không hợp lệ");
+            return;
+        }
+
+        if (password.isEmpty()) {
+            edtPassword.setError("Nhập mật khẩu");
             return;
         }
 
@@ -63,24 +77,16 @@ public class DangKyActivity extends AppCompatActivity {
             return;
         }
 
-        if (input.isEmpty()) {
-            edtGmail.setError("Nhập email hoặc số điện thoại");
-            return;
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(input).matches()) {
-            edtGmail.setError("Firebase chỉ hỗ trợ email (tạm thời)");
-            return;
-        }
-
-        // 🔥 Firebase Register
-        mAuth.createUserWithEmailAndPassword(input, password)
+        // 🔥 Firebase đăng ký
+        mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
 
-                        Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this,
+                                "Đăng ký thành công",
+                                Toast.LENGTH_SHORT).show();
 
-                        // 👉 chuyển sang login
+                        // 👉 quay về login
                         startActivity(new Intent(this, DangNhapActivity.class));
                         finish();
 

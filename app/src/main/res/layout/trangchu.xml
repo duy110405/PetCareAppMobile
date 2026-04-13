@@ -273,4 +273,5 @@
         app:itemIconTint="@color/nav_item_color"
         app:itemTextColor="@color/nav_item_color"/>
 
+
 </androidx.constraintlayout.widget.ConstraintLayout>
