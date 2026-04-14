@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.example.petcareapp"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -44,4 +44,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.12.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore:24.11.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 }

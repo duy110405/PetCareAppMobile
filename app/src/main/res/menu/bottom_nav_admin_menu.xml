@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_calendar"
+        android:icon="@drawable/ic_calendar_outline"
+        android:title="Lịch hẹn"/>
+
+    <item
+        android:id="@+id/nav_service"
+        android:icon="@drawable/ic_calendar_outline"
+        android:title="Dịch vụ"/>
+
+    <item
+        android:id="@+id/nav_branch"
+        android:icon="@drawable/ic_location_outline"
+        android:title="Chi nhánh"/>
+
+    <item
+        android:id="@+id/nav_user"
+        android:icon="@drawable/ic_person"
+        android:title="Người dùng"/>
+
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@drawable/ic_logout"
+        android:title="Thoát"/>
+
+</menu>

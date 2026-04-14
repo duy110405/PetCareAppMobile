@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#D6F4FA"
-    tools:context=".Login_Register.DangNhapActivity">
+    tools:context=".ui.auth.DangNhapActivity">
 
     <TextView
         android:id="@+id/tvLoginTitle"

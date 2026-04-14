@@ -1,4 +1,4 @@
-package com.example.petcareapp.Login_Register;
+package com.example.petcareapp.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;

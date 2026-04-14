@@ -1,4 +1,4 @@
-package com.example.petcareapp.Login_Register;
+package com.example.petcareapp.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,9 +9,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petcareapp.R;
-import com.example.petcareapp.viewmodel.user.UViewModel;
 
 
+import com.example.petcareapp.ui.user.UViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;

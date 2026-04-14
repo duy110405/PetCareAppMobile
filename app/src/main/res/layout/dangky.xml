@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#D6F4FA"
-    tools:context=".Login_Register.DangKyActivity">
+    tools:context=".ui.auth.DangKyActivity">
 
     <TextView
         android:id="@+id/tvRegisterTitle"
