@@ -24,7 +24,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public class AChiNhanhActivity extends AppCompatActivity {
 
-    private AdminChiNhanhViewModel adminChiNhanhViewModel;
+    private AChiNhanhViewModel aChiNhanhViewModel;
     private MaterialCardView btnMoDialogThem;
     private RecyclerView rvChiNhanh;
     private AChiNhanhAdapter adapter;
@@ -36,7 +36,7 @@ public class AChiNhanhActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_qly_chinhanh);
 
-        adminChiNhanhViewModel = new ViewModelProvider(this).get(AdminChiNhanhViewModel.class);
+        aChiNhanhViewModel = new ViewModelProvider(this).get(AChiNhanhViewModel.class);
 
         // Ánh xạ View
         btnMoDialogThem = findViewById(R.id.btnThemChiNhanh);
@@ -49,20 +49,19 @@ public class AChiNhanhActivity extends AppCompatActivity {
         rvChiNhanh.setAdapter(adapter);
 
         // Bắt sự kiện khi danh sách trên Firebase thay đổi
-        adminChiNhanhViewModel.getDanhSachChiNhanh().observe(this, danhSach -> {
+        aChiNhanhViewModel.getDanhSachChiNhanh().observe(this, danhSach -> {
             adapter.setDanhSachChiNhanh(danhSach);
             tvDemChiNhanh.setText(danhSach.size() + " chi nhánh"); // Cập nhật số lượng trên Header
         });
 
         // Bắt sự kiện Thông báo (Thêm/Sửa/Xóa xong)
-        adminChiNhanhViewModel.getTrangThaiThemChiNhanh().observe(this, thongBao -> {
+        aChiNhanhViewModel.getTrangThaiThemChiNhanh().observe(this, thongBao -> {
             Toast.makeText(this, thongBao, Toast.LENGTH_SHORT).show();
             if (dialogThemSua != null && dialogThemSua.isShowing()) {
                 dialogThemSua.dismiss();
             }
         });
 
-        // Nút CỘNG -> Gọi Dialog với tham số null (Thêm mới)
         btnMoDialogThem.setOnClickListener(v -> hienThiDialog(null));
 
         // Bắt sự kiện bấm nút SỬA / XÓA trên Adapter
@@ -80,7 +79,7 @@ public class AChiNhanhActivity extends AppCompatActivity {
                         .setTitle("Xác nhận xóa")
                         .setMessage("Bạn có chắc muốn xóa " + chiNhanh.getTenChiNhanh() + "?")
                         .setPositiveButton("Xóa", (dialog, which) -> {
-                            adminChiNhanhViewModel.xoaChiNhanh(chiNhanh.getId());
+                            aChiNhanhViewModel.xoaChiNhanh(chiNhanh.getId());
                         })
                         .setNegativeButton("Hủy", null)
                         .show();
@@ -150,7 +149,7 @@ public class AChiNhanhActivity extends AppCompatActivity {
 
                 if (chiNhanhDuocChon == null) {
                     // TRƯỜNG HỢP THÊM MỚI
-                    adminChiNhanhViewModel.taoMoiChiNhanh(ten, diaChi, sdt, gio, viDo, kinhDo);
+                    aChiNhanhViewModel.taoMoiChiNhanh(ten, diaChi, sdt, gio, viDo, kinhDo);
                 } else {
                     // TRƯỜNG HỢP CẬP NHẬT: Giữ lại ID cũ, chỉ cập nhật thông tin
                     chiNhanhDuocChon.setTenChiNhanh(ten);
@@ -160,7 +159,7 @@ public class AChiNhanhActivity extends AppCompatActivity {
                     chiNhanhDuocChon.setViDo(viDo);
                     chiNhanhDuocChon.setKinhDo(kinhDo);
 
-                    adminChiNhanhViewModel.capNhatChiNhanh(chiNhanhDuocChon);
+                    aChiNhanhViewModel.capNhatChiNhanh(chiNhanhDuocChon);
                 }
 
             } catch (NumberFormatException e) {

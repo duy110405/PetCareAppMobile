@@ -17,7 +17,7 @@
         <activity android:name=".ui.main.MainActivity"/>
 
         <activity
-            android:name=".ui.admin.AChiNhanhActivity"
+            android:name=".ui.user.UTimPhongActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
