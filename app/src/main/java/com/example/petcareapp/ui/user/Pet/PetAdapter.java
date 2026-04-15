@@ -1,5 +1,6 @@
 package com.example.petcareapp.ui.user.Pet;
 
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,16 @@ import java.util.List;
 
 public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder>{
     private List<Pet> list = new ArrayList<>();
+
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onClick(Pet pet);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
     public void setData(List<Pet> newList) {
         this.list = (newList != null) ? newList : new ArrayList<>();
@@ -79,14 +90,30 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder>{
             holder.txtStatus.setBackgroundResource(R.drawable.bg_status_red);
         }
 
-        String imageUrl = pet.getImageUrl();
+        String base64 = pet.getImageBase64();
 
-        Glide.with(holder.itemView.getContext())
-                .load(imageUrl != null && !imageUrl.isEmpty() ? imageUrl : R.drawable.sample_dog)
-                .placeholder(R.drawable.sample_dog)
-                .into(holder.imgPet);
+        if (base64 != null && !base64.isEmpty()) {
+            try {
+                byte[] decoded = android.util.Base64.decode(base64, android.util.Base64.DEFAULT);
+                Bitmap bitmap = android.graphics.BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+                holder.imgPet.setImageBitmap(bitmap);
+            } catch (Exception e) {
+                holder.imgPet.setImageResource(R.drawable.sample_dog);
+            }
+        } else {
+            holder.imgPet.setImageResource(R.drawable.sample_dog);
+        }
+
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onClick(pet);
+            }
+        });
 
     }
+
+
 
     @Override
     public int getItemCount() {

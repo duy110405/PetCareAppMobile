@@ -14,6 +14,7 @@ import com.example.petcareapp.R;
 import com.example.petcareapp.data.model.Pet;
 import com.example.petcareapp.ui.user.Pet.AddPetActivity;
 import com.example.petcareapp.ui.user.Pet.PetAdapter;
+import com.example.petcareapp.ui.user.Pet.PetDetailActivity;
 import com.example.petcareapp.ui.user.Pet.PetViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,14 +34,17 @@ public class UserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.trangchu);
 
+        // 🔥 mapping view
         rvPets = findViewById(R.id.rvPets);
         tvPetCount = findViewById(R.id.tvPetCount);
         btnAddPet = findViewById(R.id.btnAddPet);
 
+        // 🔥 setup RecyclerView
         adapter = new PetAdapter();
         rvPets.setLayoutManager(new LinearLayoutManager(this));
         rvPets.setAdapter(adapter);
 
+        // 🔥 ViewModel
         viewModel = new ViewModelProvider(this).get(PetViewModel.class);
 
         String userId = FirebaseAuth.getInstance().getUid();
@@ -49,6 +53,7 @@ public class UserActivity extends AppCompatActivity {
             viewModel.loadPets(userId);
         }
 
+        // 🔥 observe data
         viewModel.getPets().observe(this, pets -> {
             if (pets != null) {
                 adapter.setData(pets);
@@ -56,11 +61,20 @@ public class UserActivity extends AppCompatActivity {
             }
         });
 
+        // 🔥 click thêm pet
         btnAddPet.setOnClickListener(v -> {
             startActivity(new Intent(this, AddPetActivity.class));
         });
-    }
 
+        adapter.setOnItemClickListener(pet -> {
+            Intent intent = new Intent(UserActivity.this, PetDetailActivity.class);
+            intent.putExtra("petId", pet.getId());
+            startActivity(intent);
+        });
+
+
+    }
+    // 🔥 reload khi quay lại từ AddPet
     @Override
     protected void onResume() {
         super.onResume();

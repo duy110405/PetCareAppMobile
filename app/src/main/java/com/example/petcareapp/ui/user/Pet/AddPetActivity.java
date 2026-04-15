@@ -3,7 +3,9 @@ package com.example.petcareapp.ui.user.Pet;
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,6 +25,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -32,13 +35,12 @@ public class AddPetActivity extends AppCompatActivity {
     private EditText edtName, edtBreed, edtDob, edtWeight, edtColor;
     private Button btnSubmit, btnCancel;
 
-    private FirebaseFirestore db;
-
     private ImageView imgAvatar;
     private Button btnCapturePhoto, btnUploadPhoto;
 
-    private Uri imageUri; // lưu ảnh đã chọn
+    private FirebaseFirestore db;
 
+    private Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,7 @@ public class AddPetActivity extends AppCompatActivity {
         btnCapturePhoto = findViewById(R.id.btnCapturePhoto);
         btnUploadPhoto = findViewById(R.id.btnUploadPhoto);
 
+        // ===================== CHỌN ẢNH TỪ GALLERY =====================
         btnUploadPhoto.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -74,7 +77,7 @@ public class AddPetActivity extends AppCompatActivity {
             }
         });
 
-
+        // ===================== CHỤP ẢNH =====================
         btnCapturePhoto.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.CAMERA)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -89,31 +92,27 @@ public class AddPetActivity extends AppCompatActivity {
             }
         });
 
+        // ===================== DATE PICKER =====================
         edtDob.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
-
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog dialog = new DatePickerDialog(this,
                     (view, y, m, d) -> {
                         String date = d + "/" + (m + 1) + "/" + y;
                         edtDob.setText(date);
                     },
-                    year, month, day);
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH));
 
             dialog.show();
         });
 
-
-
-
         btnSubmit.setOnClickListener(v -> addPet());
         btnCancel.setOnClickListener(v -> finish());
-
     }
 
+    // ===================== CAMERA RESULT =====================
     private final ActivityResultLauncher<Uri> cameraLauncher =
             registerForActivityResult(new ActivityResultContracts.TakePicture(), result -> {
                 if (result) {
@@ -121,27 +120,39 @@ public class AddPetActivity extends AppCompatActivity {
                 }
             });
 
+    // ===================== GALLERY RESULT =====================
     private final ActivityResultLauncher<String> galleryLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
+
+                    // giữ quyền truy cập URI
+                    final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                    try {
+                        getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                    } catch (Exception ignored) {}
+
                     imageUri = uri;
                     imgAvatar.setImageURI(uri);
                 }
             });
 
-
+    // ===================== CREATE IMAGE URI =====================
     private Uri createImageUri() {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "pet_image");
         values.put(MediaStore.Images.Media.DESCRIPTION, "from camera");
+
         return getContentResolver().insert(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 values
         );
     }
 
+    // ===================== PERMISSION RESULT =====================
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -160,40 +171,33 @@ public class AddPetActivity extends AppCompatActivity {
         }
     }
 
+    private Bitmap uriToBitmap(Uri uri) {
+        try {
+            return MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String encodeToBase64(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+        byte[] bytes = baos.toByteArray();
+        return android.util.Base64.encodeToString(bytes, android.util.Base64.DEFAULT);
+    }
 
 
+
+    // ===================== ADD PET =====================
     private void addPet() {
 
         String name = edtName.getText().toString().trim();
         String breed = edtBreed.getText().toString().trim();
-
-        String dobStr = edtDob.getText().toString().trim();
-
-        if (dobStr.isEmpty()) {
-            edtDob.setError("Chọn ngày sinh");
-            return;
-        }
-
-        Timestamp dob = null;
-
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-            Date date = sdf.parse(dobStr);
-            dob = new Timestamp(date);
-        } catch (Exception e) {
-            Toast.makeText(this, "Ngày không hợp lệ", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-
-
-
-        String imageUrl = (imageUri != null) ? imageUri.toString() : "";
-
-
         String weightStr = edtWeight.getText().toString().trim();
         String color = edtColor.getText().toString().trim();
+        String dobStr = edtDob.getText().toString().trim();
 
+        // validate
         if (name.isEmpty()) {
             edtName.setError("Nhập tên thú cưng");
             return;
@@ -204,6 +208,28 @@ public class AddPetActivity extends AppCompatActivity {
             return;
         }
 
+        if (dobStr.isEmpty()) {
+            edtDob.setError("Chọn ngày sinh");
+            return;
+        }
+
+        if (imageUri == null) {
+            Toast.makeText(this, "Vui lòng chọn ảnh", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // parse dob
+        Timestamp dob;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            Date date = sdf.parse(dobStr);
+            dob = new Timestamp(date);
+        } catch (Exception e) {
+            Toast.makeText(this, "Ngày không hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // parse weight
         double weight = 0;
         try {
             if (!weightStr.isEmpty()) {
@@ -214,31 +240,38 @@ public class AddPetActivity extends AppCompatActivity {
             return;
         }
 
-
         String userId = FirebaseAuth.getInstance().getUid();
         if (userId == null) return;
 
-        // 🔥 tạo id pet
+        // tạo petId
         String petId = db.collection("users")
                 .document(userId)
                 .collection("pets")
                 .document()
                 .getId();
 
+        Bitmap bitmap = uriToBitmap(imageUri);
+
+        if (bitmap == null) {
+            Toast.makeText(this, "Không đọc được ảnh", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String base64Image = encodeToBase64(bitmap);
+
+
         Pet pet = new Pet(
                 petId,
                 name,
                 breed,
-                dob, // 🔥 lưu DOB
+                dob,
                 weight,
                 color,
                 "Khỏe mạnh",
-                imageUrl,
+                base64Image,
                 0
         );
 
-
-        // 🔥 lưu Firestore
         db.collection("users")
                 .document(userId)
                 .collection("pets")
@@ -246,12 +279,10 @@ public class AddPetActivity extends AppCompatActivity {
                 .set(pet)
                 .addOnSuccessListener(unused -> {
                     Toast.makeText(this, "Thêm thành công", Toast.LENGTH_SHORT).show();
-                    finish(); // quay lại UserActivity
+                    finish();
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
     }
-
-
 }

@@ -11,14 +11,14 @@ public class Pet {
     private double weight;
     private String color;
     private String status;
-    private String imageUrl;
+    String imageBase64;
     private int reminderCount;
 
     public Pet() {}
 
     public Pet(String id, String name, String breed, Timestamp dob,
                double weight, String color, String status,
-               String imageUrl, int reminderCount) {
+               String imageBase64, int reminderCount) {
         this.id = id;
         this.name = name;
         this.breed = breed;
@@ -26,10 +26,13 @@ public class Pet {
         this.weight = weight;
         this.color = color;
         this.status = status;
-        this.imageUrl = imageUrl;
+        this.imageBase64 = imageBase64;
         this.reminderCount = reminderCount;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getId() { return id; }
     public String getName() { return name; }
@@ -38,6 +41,10 @@ public class Pet {
     public double getWeight() { return weight; }
     public String getColor() { return color; }
     public String getStatus() { return status; }
-    public String getImageUrl() { return imageUrl; }
+
+    public String getImageBase64() {
+        return imageBase64;
+    }
+
     public int getReminderCount() { return reminderCount; }
 }
