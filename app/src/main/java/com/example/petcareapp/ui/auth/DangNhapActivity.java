@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.petcareapp.R;
 
 
-import com.example.petcareapp.ui.user.UViewModel;
+import com.example.petcareapp.ui.user.UserActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -91,7 +91,7 @@ public class DangNhapActivity extends AppCompatActivity {
     }
 
     private void goToHome() {
-        startActivity(new Intent(this, UViewModel.class));
+        startActivity(new Intent(this, UserActivity.class));
         finish();
     }
 
