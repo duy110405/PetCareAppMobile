@@ -7,7 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdminChiNhanhRepository {
+public class AChiNhanhRepository {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // Hàm thêm chi nhánh lên mạng

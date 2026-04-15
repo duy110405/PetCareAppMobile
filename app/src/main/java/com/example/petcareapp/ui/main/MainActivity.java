@@ -16,6 +16,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.admin_qly_chinhanh);
+        setContentView(R.layout.user_timphong);
     }
 }

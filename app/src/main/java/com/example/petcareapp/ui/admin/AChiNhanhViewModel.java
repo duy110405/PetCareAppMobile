@@ -4,17 +4,17 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.example.petcareapp.data.model.ChiNhanh;
-import com.example.petcareapp.data.repository.AdminChiNhanhRepository;
+import com.example.petcareapp.data.repository.AChiNhanhRepository;
 
 import java.util.List;
 
-public class AdminChiNhanhViewModel extends ViewModel {
-    private AdminChiNhanhRepository repository;
+public class AChiNhanhViewModel extends ViewModel {
+    private AChiNhanhRepository repository;
     private MutableLiveData<String> trangThaiThemChiNhanh;
     private MutableLiveData<List<ChiNhanh>> danhSachChiNhanh;
 
-    public AdminChiNhanhViewModel() {
-        repository = new AdminChiNhanhRepository();
+    public AChiNhanhViewModel() {
+        repository = new AChiNhanhRepository();
         trangThaiThemChiNhanh = new MutableLiveData<>();
     }
 
