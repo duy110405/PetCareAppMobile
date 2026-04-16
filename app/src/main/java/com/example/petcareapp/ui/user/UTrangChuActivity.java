@@ -11,17 +11,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petcareapp.R;
-import com.example.petcareapp.data.model.Pet;
 import com.example.petcareapp.ui.user.Pet.AddPetActivity;
 import com.example.petcareapp.ui.user.Pet.PetAdapter;
 import com.example.petcareapp.ui.user.Pet.PetDetailActivity;
 import com.example.petcareapp.ui.user.Pet.PetViewModel;
+import com.example.petcareapp.utils.MenuUser;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.List;
-
-public class UserActivity extends AppCompatActivity {
+public class UTrangChuActivity extends AppCompatActivity {
 
     private RecyclerView rvPets;
     private PetAdapter adapter;
@@ -32,19 +30,20 @@ public class UserActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.trangchu);
+        setContentView(R.layout.user_trang_chu);
 
-        // 🔥 mapping view
+        // mapping view
         rvPets = findViewById(R.id.rvPets);
         tvPetCount = findViewById(R.id.tvPetCount);
         btnAddPet = findViewById(R.id.btnAddPet);
-
-        // 🔥 setup RecyclerView
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
+        MenuUser.setup(this, bottomNav);
+        //  setup RecyclerView
         adapter = new PetAdapter();
         rvPets.setLayoutManager(new LinearLayoutManager(this));
         rvPets.setAdapter(adapter);
 
-        // 🔥 ViewModel
+        //  ViewModel
         viewModel = new ViewModelProvider(this).get(PetViewModel.class);
 
         String userId = FirebaseAuth.getInstance().getUid();
@@ -53,7 +52,7 @@ public class UserActivity extends AppCompatActivity {
             viewModel.loadPets(userId);
         }
 
-        // 🔥 observe data
+        // observe data
         viewModel.getPets().observe(this, pets -> {
             if (pets != null) {
                 adapter.setData(pets);
@@ -61,13 +60,13 @@ public class UserActivity extends AppCompatActivity {
             }
         });
 
-        // 🔥 click thêm pet
+        // click thêm pet
         btnAddPet.setOnClickListener(v -> {
             startActivity(new Intent(this, AddPetActivity.class));
         });
 
         adapter.setOnItemClickListener(pet -> {
-            Intent intent = new Intent(UserActivity.this, PetDetailActivity.class);
+            Intent intent = new Intent(UTrangChuActivity.this, PetDetailActivity.class);
             intent.putExtra("petId", pet.getId());
             startActivity(intent);
         });

@@ -43,7 +43,7 @@
         <activity android:name=".ui.auth.DangKyActivity"/>
         <activity android:name=".ui.main.MainActivity"/>
         <activity android:name=".ui.admin.AChiNhanhActivity"/>
-        <activity android:name=".ui.user.UserActivity"/>
+        <activity android:name=".ui.user.UTrangChuActivity"/>
         <activity android:name=".ui.user.UTimPhongActivity"/>
         <activity android:name=".ui.user.Pet.AddPetActivity" />
         <activity android:name=".ui.user.Pet.PetDetailActivity"/>

@@ -7,7 +7,7 @@ public class Pet {
     private String id;
     private String name;
     private String breed;
-    private Timestamp dob; // 🔥 lưu ngày sinh;
+    private Timestamp dob;
     private double weight;
     private String color;
     private String status;

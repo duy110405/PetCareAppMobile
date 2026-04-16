@@ -15,7 +15,7 @@ public class PetRepository {
 
     public void getPetsByUser(String userId, OnPetsCallback callback) {
 
-        // 🔥 tránh duplicate listener
+        // tránh duplicate listener
         if (listener != null) {
             listener.remove();
         }
@@ -37,7 +37,7 @@ public class PetRepository {
                         Pet pet = doc.toObject(Pet.class);
 
                         if (pet != null) {
-                            pet.setId(doc.getId()); // 🔥 QUAN TRỌNG NHẤT
+                            pet.setId(doc.getId()); // QUAN TRỌNG NHẤT
                             list.add(pet);
                         }
                     }
