@@ -11,15 +11,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petcareapp.R;
-import com.example.petcareapp.data.model.Pet;
 import com.example.petcareapp.ui.user.Pet.AddPetActivity;
 import com.example.petcareapp.ui.user.Pet.PetAdapter;
 import com.example.petcareapp.ui.user.Pet.PetDetailActivity;
 import com.example.petcareapp.ui.user.Pet.PetViewModel;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.List;
 
 public class UserActivity extends AppCompatActivity {
 
@@ -32,7 +28,7 @@ public class UserActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.trangchu);
+        setContentView(R.layout.user_trang_chu);
 
         // 🔥 mapping view
         rvPets = findViewById(R.id.rvPets);

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.petcareapp.R;
 
 
+import com.example.petcareapp.ui.user.TrangChu.UTrangChuActivity;
 import com.example.petcareapp.ui.user.UserActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -91,7 +92,7 @@ public class DangNhapActivity extends AppCompatActivity {
     }
 
     private void goToHome() {
-        startActivity(new Intent(this, UserActivity.class));
+        startActivity(new Intent(this, UTrangChuActivity.class));
         finish();
     }
 
