@@ -104,8 +104,10 @@ public class AddPetActivity extends AppCompatActivity {
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
                     calendar.get(Calendar.DAY_OF_MONTH));
-
+            // 🔥 chặn ngày tương lai
+            dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
             dialog.show();
+
         });
 
         btnSubmit.setOnClickListener(v -> addPet());
@@ -223,6 +225,12 @@ public class AddPetActivity extends AppCompatActivity {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             Date date = sdf.parse(dobStr);
+
+            if (date.after(new Date())) {
+                Toast.makeText(this, "Ngày sinh không được ở tương lai", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             dob = new Timestamp(date);
         } catch (Exception e) {
             Toast.makeText(this, "Ngày không hợp lệ", Toast.LENGTH_SHORT).show();

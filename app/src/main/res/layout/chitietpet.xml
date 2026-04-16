@@ -160,8 +160,9 @@
                         android:textStyle="bold"
                         android:textColor="#333333"/>
 
-                    <TextView
-                        android:id="@+id/tvPetName"
+                    <EditText
+                        android:id="@+id/edtName"
+                        android:enabled="false"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingHorizontal="12dp"
@@ -179,8 +180,9 @@
                         android:textStyle="bold"
                         android:textColor="#333333"/>
 
-                    <TextView
-                        android:id="@+id/tvPetBreed"
+                    <EditText
+                        android:id="@+id/edtBreed"
+                        android:enabled="false"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingHorizontal="12dp"
@@ -196,8 +198,10 @@
                         android:textStyle="bold"
                         android:textColor="#333333"/>
 
-                    <TextView
-                        android:id="@+id/tvPetDob"
+                    <EditText
+                        android:id="@+id/edtDob"
+                        android:focusable="false"
+                        android:clickable="true"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingHorizontal="12dp"
@@ -213,8 +217,9 @@
                         android:textStyle="bold"
                         android:textColor="#333333"/>
 
-                    <TextView
-                        android:id="@+id/tvPetWeight"
+                    <EditText
+                        android:id="@+id/edtWeight"
+                        android:enabled="false"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingHorizontal="12dp"
@@ -230,8 +235,9 @@
                         android:textStyle="bold"
                         android:textColor="#333333"/>
 
-                    <TextView
-                        android:id="@+id/tvPetColor"
+                    <EditText
+                        android:id="@+id/edtColor"
+                        android:enabled="false"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingHorizontal="12dp"

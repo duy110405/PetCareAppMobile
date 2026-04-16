@@ -24,4 +24,10 @@ public class PetViewModel extends ViewModel {
             petsLiveData.setValue(pets);
         });
     }
+
+    @Override
+    protected void onCleared() {
+        repository.removeListener();
+    }
+
 }
