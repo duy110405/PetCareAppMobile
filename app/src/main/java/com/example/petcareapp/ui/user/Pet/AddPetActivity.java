@@ -45,7 +45,7 @@ public class AddPetActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.thempet);
+        setContentView(R.layout.user_them_pet);
 
         db = FirebaseFirestore.getInstance();
 
@@ -175,7 +175,13 @@ public class AddPetActivity extends AppCompatActivity {
 
     private Bitmap uriToBitmap(Uri uri) {
         try {
-            return MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            Bitmap original = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+
+            // THU NHỎ ẢNH ĐỂ TRÁNH LỖI 1MB CỦA FIRESTORE
+            int maxWidth = 400; // Chiều rộng tối đa 400px (Đủ nét cho Avatar)
+            int maxHeight = (int) ((double) original.getHeight() / original.getWidth() * maxWidth);
+
+            return Bitmap.createScaledBitmap(original, maxWidth, maxHeight, true);
         } catch (Exception e) {
             return null;
         }
