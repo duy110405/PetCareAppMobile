@@ -1,29 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
-        android:title="Trang chủ"/>
-
+        android:title="Trang chủ" />
     <item
-        android:id="@+id/nav_calendar"
-        android:icon="@drawable/ic_calendar_outline"
-        android:title="Lịch hẹn"/>
-
+        android:id="@+id/nav_lichhen"
+        android:icon="@drawable/ic_calendar_blue"
+        android:title="Lịch hẹn" />
     <item
-        android:id="@+id/nav_location"
+        android:id="@+id/nav_phongkham"
         android:icon="@drawable/ic_location_outline"
-        android:title="Tìm phòng khám"/>
-
+        android:title="Phòng khám" />
     <item
-        android:id="@+id/nav_pet"
+        android:id="@+id/nav_nguoidung"
         android:icon="@drawable/ic_walk"
-        android:title="Dạo chơi"/>
-
+        android:title="Dạo chơi" />
     <item
-        android:id="@+id/nav_logout"
+        android:id="@+id/nav_thoat"
         android:icon="@drawable/ic_settings"
-        android:title="Thoát"/>
+        android:title="Cài đặt" />
+</menu><!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<menu xmlns:android="http://schemas.android.com/apk/res/android">-->
 
-</menu>
+<!--    <item-->
+<!--        android:id="@+id/nav_home"-->
+<!--        android:icon="@drawable/ic_home"-->
+<!--        android:title="Trang chủ"/>-->
+
+<!--    <item-->
+<!--        android:id="@+id/nav_calendar"-->
+<!--        android:icon="@drawable/ic_calendar_outline"-->
+<!--        android:title="Lịch hẹn"/>-->
+
+<!--    <item-->
+<!--        android:id="@+id/nav_location"-->
+<!--        android:icon="@drawable/ic_location_outline"-->
+<!--        android:title="Tìm phòng khám"/>-->
+
+<!--    <item-->
+<!--        android:id="@+id/nav_pet"-->
+<!--        android:icon="@drawable/ic_walk"-->
+<!--        android:title="Dạo chơi"/>-->
+
+<!--    <item-->
+<!--        android:id="@+id/nav_logout"-->
+<!--        android:icon="@drawable/ic_settings"-->
+<!--        android:title="Thoát"/>-->
+
+<!--</menu>-->

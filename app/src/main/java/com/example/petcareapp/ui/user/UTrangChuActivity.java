@@ -21,7 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
-public class UserActivity extends AppCompatActivity {
+public class UTrangChuActivity extends AppCompatActivity {
 
     private RecyclerView rvPets;
     private PetAdapter adapter;
@@ -32,7 +32,7 @@ public class UserActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.trangchu);
+        setContentView(R.layout.user_trang_chu);
 
         // 🔥 mapping view
         rvPets = findViewById(R.id.rvPets);
@@ -67,7 +67,7 @@ public class UserActivity extends AppCompatActivity {
         });
 
         adapter.setOnItemClickListener(pet -> {
-            Intent intent = new Intent(UserActivity.this, PetDetailActivity.class);
+            Intent intent = new Intent(UTrangChuActivity.this, PetDetailActivity.class);
             intent.putExtra("petId", pet.getId());
             startActivity(intent);
         });

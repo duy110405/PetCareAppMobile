@@ -53,7 +53,7 @@ public class PetDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.chitietpet);
+        setContentView(R.layout.user_chi_tiet_pet);
 
         // 🔥 init firebase
         db = FirebaseFirestore.getInstance();
