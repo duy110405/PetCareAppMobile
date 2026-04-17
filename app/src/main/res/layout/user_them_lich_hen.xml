@@ -10,10 +10,10 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -109,15 +109,27 @@
                             android:orientation="vertical"
                             android:padding="12dp">
 
-                            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" app:cardBackgroundColor="@android:color/white" app:cardCornerRadius="8dp" app:cardElevation="0dp" app:strokeColor="#E0E0E0" app:strokeWidth="1dp">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardDichVu1"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" app:cardBackgroundColor="@android:color/white" app:cardCornerRadius="8dp" app:cardElevation="0dp" app:strokeColor="#E0E0E0" app:strokeWidth="1dp">
                                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="12dp" android:text="Khám tổng quát (khám sức khỏe định kỳ...) - 200.000đ" android:textSize="11sp" android:textColor="#333333" />
                             </com.google.android.material.card.MaterialCardView>
 
-                            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" app:cardBackgroundColor="@android:color/white" app:cardCornerRadius="8dp" app:cardElevation="0dp" app:strokeColor="#E0E0E0" app:strokeWidth="1dp">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardDichVu2"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" app:cardBackgroundColor="@android:color/white" app:cardCornerRadius="8dp" app:cardElevation="0dp" app:strokeColor="#E0E0E0" app:strokeWidth="1dp">
                                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="12dp" android:text="Tiêm phòng (phòng dại, truyền nhiễm) - 500.000đ" android:textSize="11sp" android:textColor="#333333" />
                             </com.google.android.material.card.MaterialCardView>
 
-                            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" app:cardBackgroundColor="@android:color/white" app:cardCornerRadius="8dp" app:cardElevation="0dp" app:strokeColor="#E0E0E0" app:strokeWidth="1dp">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardDichVu3"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:layout_width="match_parent" android:layout_height="wrap_content" app:cardBackgroundColor="@android:color/white" app:cardCornerRadius="8dp" app:cardElevation="0dp" app:strokeColor="#E0E0E0" app:strokeWidth="1dp">
                                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="12dp" android:text="Spa (tắm, cắt tỉa lông, làm đẹp) - 200.000đ" android:textSize="11sp" android:textColor="#333333" />
                             </com.google.android.material.card.MaterialCardView>
                         </LinearLayout>
@@ -147,24 +159,24 @@
                             android:padding="12dp">
 
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                                <com.google.android.material.button.MaterialButton style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:text="8 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
-                                <com.google.android.material.button.MaterialButton android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginHorizontal="4dp" android:text="9 : 00" app:backgroundTint="#66BB6A" app:cornerRadius="20dp" />
-                                <com.google.android.material.button.MaterialButton style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginHorizontal="4dp" android:text="10 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
-                                <com.google.android.material.button.MaterialButton style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginStart="4dp" android:text="11 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
+                                <com.google.android.material.button.MaterialButton android:id="@+id/btnTime8" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:text="8:00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
+                                <com.google.android.material.button.MaterialButton android:id="@+id/btnTime9" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginHorizontal="4dp" android:text="9:00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
+                                <com.google.android.material.button.MaterialButton android:id="@+id/btnTime10" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginHorizontal="4dp" android:text="10:00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
+                                <com.google.android.material.button.MaterialButton android:id="@+id/btnTime11" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginStart="4dp" android:text="11:00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
                             </LinearLayout>
 
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="horizontal">
-                                <com.google.android.material.button.MaterialButton android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:text="12 : 00" app:backgroundTint="#66BB6A" app:cornerRadius="20dp" />
-                                <com.google.android.material.button.MaterialButton style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginHorizontal="4dp" android:text="13 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
-                                <com.google.android.material.button.MaterialButton android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginHorizontal="4dp" android:text="14 : 00" app:backgroundTint="#66BB6A" app:cornerRadius="20dp" />
-                                <com.google.android.material.button.MaterialButton style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginStart="4dp" android:text="15 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
+                                <com.google.android.material.button.MaterialButton android:id="@+id/btnTime12" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:text="12 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
+                                <com.google.android.material.button.MaterialButton android:id="@+id/btnTime13" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginHorizontal="4dp" android:text="13 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
+                                <com.google.android.material.button.MaterialButton android:id="@+id/btnTime14" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginHorizontal="4dp" android:text="14 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
+                                <com.google.android.material.button.MaterialButton android:id="@+id/btnTime15" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginStart="4dp" android:text="15 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
                             </LinearLayout>
 
                             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="horizontal">
-                                <com.google.android.material.button.MaterialButton style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:text="16 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
-                                <com.google.android.material.button.MaterialButton android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginHorizontal="4dp" android:text="17 : 00" app:backgroundTint="#66BB6A" app:cornerRadius="20dp" />
-                                <com.google.android.material.button.MaterialButton style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginHorizontal="4dp" android:text="18 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
-                                <com.google.android.material.button.MaterialButton style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginStart="4dp" android:text="19 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
+                                <com.google.android.material.button.MaterialButton android:id="@+id/btnTime16" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:text="16 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
+                                <com.google.android.material.button.MaterialButton android:id="@+id/btnTime17" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginHorizontal="4dp" android:text="17 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
+                                <com.google.android.material.button.MaterialButton android:id="@+id/btnTime18" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginHorizontal="4dp" android:text="18 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
+                                <com.google.android.material.button.MaterialButton android:id="@+id/btnTime19" style="@style/Widget.MaterialComponents.Button.OutlinedButton" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:layout_marginStart="4dp" android:text="19 : 00" android:textColor="#333333" app:cornerRadius="20dp" app:strokeColor="#E0E0E0" />
                             </LinearLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -180,7 +192,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:layout_marginBottom="24dp"
-                        android:text="Giá : "
+                        android:text="Giá : 0 đ"
                         android:textColor="#000000"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -224,16 +236,5 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_nav_menu"
-        app:itemIconTint="@color/nav_item_color"
-        app:itemTextColor="@color/nav_item_color"
-        app:labelVisibilityMode="labeled"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

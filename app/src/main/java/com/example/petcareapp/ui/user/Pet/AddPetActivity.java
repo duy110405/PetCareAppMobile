@@ -21,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petcareapp.R;
 import com.example.petcareapp.data.model.Pet;
+import com.example.petcareapp.utils.MenuUser;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,7 +47,7 @@ public class AddPetActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.thempet);
+        setContentView(R.layout.user_them_pet);
 
         db = FirebaseFirestore.getInstance();
 
@@ -104,7 +106,7 @@ public class AddPetActivity extends AppCompatActivity {
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
                     calendar.get(Calendar.DAY_OF_MONTH));
-            // 🔥 chặn ngày tương lai
+            //  chặn ngày tương lai
             dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
             dialog.show();
 
@@ -175,7 +177,13 @@ public class AddPetActivity extends AppCompatActivity {
 
     private Bitmap uriToBitmap(Uri uri) {
         try {
-            return MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            Bitmap original = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+
+            // THU NHỎ ẢNH ĐỂ TRÁNH LỖI 1MB CỦA FIRESTORE
+            int maxWidth = 400; // Chiều rộng tối đa 400px (Đủ nét cho Avatar)
+            int maxHeight = (int) ((double) original.getHeight() / original.getWidth() * maxWidth);
+
+            return Bitmap.createScaledBitmap(original, maxWidth, maxHeight, true);
         } catch (Exception e) {
             return null;
         }

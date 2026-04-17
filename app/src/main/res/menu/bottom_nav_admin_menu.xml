@@ -2,27 +2,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/nav_calendar"
+        android:id="@+id/nav_lichhen"
         android:icon="@drawable/ic_calendar_outline"
         android:title="Lịch hẹn"/>
 
     <item
-        android:id="@+id/nav_service"
+        android:id="@+id/nav_dichvu"
         android:icon="@drawable/ic_calendar_outline"
         android:title="Dịch vụ"/>
 
     <item
-        android:id="@+id/nav_branch"
+        android:id="@+id/nav_chinhanh"
         android:icon="@drawable/ic_location_outline"
         android:title="Chi nhánh"/>
 
     <item
-        android:id="@+id/nav_user"
+        android:id="@+id/nav_nguoidung"
         android:icon="@drawable/ic_person"
         android:title="Người dùng"/>
 
     <item
-        android:id="@+id/nav_logout"
+        android:id="@+id/nav_thoat"
         android:icon="@drawable/ic_logout"
         android:title="Thoát"/>
 

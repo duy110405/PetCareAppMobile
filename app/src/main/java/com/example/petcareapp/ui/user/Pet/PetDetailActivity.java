@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +23,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petcareapp.R;
+import com.example.petcareapp.utils.MenuUser;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,27 +46,25 @@ public class PetDetailActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String userId, petId;
 
-    private Button btnCapture, btnUpload, btnEditPet, btnAddAlarm;
+    private Button btnCapture, btnUpload, btnEditPet;
     private Uri imageUri;
 
     private boolean isEditing = false;
-
-    private LinearLayout alarmContainer;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.chitietpet);
+        setContentView(R.layout.user_chi_tiet_pet);
 
-        // 🔥 init firebase
+        //  init firebase
         db = FirebaseFirestore.getInstance();
         userId = FirebaseAuth.getInstance().getUid();
 
-        // 🔥 lấy petId từ intent
+        //  lấy petId từ intent
         petId = getIntent().getStringExtra("petId");
 
-        // 🔥 mapping view
+        //  mapping view
         imgAvatar = findViewById(R.id.imgAvatar);
 
         btnEditPet = findViewById(R.id.btnEditPet);
@@ -80,11 +79,8 @@ public class PetDetailActivity extends AppCompatActivity {
         edtColor = findViewById(R.id.edtColor);
 
         btnDelete = findViewById(R.id.btnDeletePet);
-
-        alarmContainer = findViewById(R.id.alarmContainer);
-        btnAddAlarm = findViewById(R.id.btnAddAlarm);
-
-
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
+        MenuUser.setup(this, bottomNav);
         // ===================== CHỌN ẢNH TỪ GALLERY =====================
         btnUpload.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -114,10 +110,10 @@ public class PetDetailActivity extends AppCompatActivity {
             }
         });
 
-        // 🔥 load data
+        //  load data
         loadPet();
 
-        // 🔥 delete pet
+        //  delete pet
         btnDelete.setOnClickListener(v -> deletePet());
 
         edtDob.setOnClickListener(v -> {
@@ -143,30 +139,19 @@ public class PetDetailActivity extends AppCompatActivity {
 
         btnEditPet.setOnClickListener(v -> {
             if (!isEditing) {
-                // 🔥 CHUYỂN SANG EDIT MODE
+                //  CHUYỂN SANG EDIT MODE
                 enableEdit(true);
                 btnEditPet.setText("Lưu");
                 isEditing = true;
 
             } else {
-                // 🔥 LƯU DỮ LIỆU
+                //  LƯU DỮ LIỆU
                 updatePetInfo();
                 enableEdit(false);
                 btnEditPet.setText("Sửa");
                 isEditing = false;
             }
         });
-
-
-        btnAddAlarm.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ThemChuongBaoActivity.class);
-            intent.putExtra("petId", petId);
-            startActivity(intent);
-        });
-
-        listenAlarms();
-
-
 
     }
 
@@ -179,7 +164,7 @@ public class PetDetailActivity extends AppCompatActivity {
 
                     if (bitmap != null) {
                         imgAvatar.setImageBitmap(bitmap);
-                        updatePetImage(bitmap); // 🔥 quan trọng
+                        updatePetImage(bitmap); //  quan trọng
                     }
                 }
             });
@@ -231,7 +216,7 @@ public class PetDetailActivity extends AppCompatActivity {
 
 
     // ===============================
-    // 🔥 LOAD PET FROM FIRESTORE
+    // LOAD PET FROM FIRESTORE
     // ===============================
     private void loadPet() {
         if (userId == null || petId == null) return;
@@ -251,7 +236,7 @@ public class PetDetailActivity extends AppCompatActivity {
                         Double weight = doc.getDouble("weight");
                         Timestamp dob = doc.getTimestamp("dob");
 
-                        // 🔥 set data
+                        //  set data
                         edtName.setText(name);
                         edtBreed.setText(breed);
                         edtColor.setText(color);
@@ -277,7 +262,7 @@ public class PetDetailActivity extends AppCompatActivity {
     }
 
     // ===============================
-    // 🔥 FORMAT DATE
+    //  FORMAT DATE
     // ===============================
     private String formatDate(Timestamp timestamp) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -285,7 +270,7 @@ public class PetDetailActivity extends AppCompatActivity {
     }
 
     // ===============================
-    // 🔥 TÍNH TUỔI
+    //  TÍNH TUỔI
     // ===============================
     private int calculateAge(Timestamp dob) {
         Calendar birth = Calendar.getInstance();
@@ -303,7 +288,7 @@ public class PetDetailActivity extends AppCompatActivity {
     }
 
     // ===============================
-    // 🔥 DELETE PET
+    //  DELETE PET
     // ===============================
     private void deletePet() {
         if (userId == null || petId == null) return;
@@ -396,53 +381,5 @@ public class PetDetailActivity extends AppCompatActivity {
                 );
     }
 
-    private void listenAlarms() {
-
-        db.collection("users")
-                .document(userId)
-                .collection("pets")
-                .document(petId)
-                .collection("alarms")
-                .addSnapshotListener((value, error) -> {
-
-                    if (error != null || value == null) return;
-
-                    alarmContainer.removeAllViews();
-
-                    for (var doc : value.getDocuments()) {
-
-                        String id = doc.getString("id");
-                        String name = doc.getString("name");
-                        String time = doc.getString("time");
-                        String type = doc.getString("type");
-
-                        addAlarmView(id, name, time, type);
-                    }
-                });
-    }
-
-    private void addAlarmView(String id, String name, String time, String type) {
-
-        View view = getLayoutInflater().inflate(R.layout.item_alarm, null);
-
-        TextView tvName = view.findViewById(R.id.tvAlarmName);
-        TextView tvTime = view.findViewById(R.id.tvAlarmTime);
-        ImageView btnDelete = view.findViewById(R.id.btnDeleteAlarm);
-
-        tvName.setText(name);
-        tvTime.setText(type + " • " + time);
-
-        btnDelete.setOnClickListener(v -> {
-            db.collection("users")
-                    .document(userId)
-                    .collection("pets")
-                    .document(petId)
-                    .collection("alarms")
-                    .document(id)
-                    .delete();
-        });
-
-        alarmContainer.addView(view);
-    }
 
 }
