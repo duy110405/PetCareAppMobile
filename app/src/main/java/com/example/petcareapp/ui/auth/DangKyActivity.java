@@ -12,37 +12,37 @@ import com.example.petcareapp.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore; // THÊM IMPORT
 
-
+import java.util.HashMap;
+import java.util.Map;
 
 public class DangKyActivity extends AppCompatActivity {
 
     private TextInputEditText edtUsername, edtPassword, edtGmail;
     private MaterialButton btnRegister;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db; // Khai báo Database
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dangky);
 
-        // 🔗 ánh xạ view
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         edtGmail = findViewById(R.id.edtGmail);
         btnRegister = findViewById(R.id.btnRegister);
-        TextView tvLogin = findViewById(R.id.tvLogin); // nút quay lại login
+        TextView tvLogin = findViewById(R.id.tvLogin);
 
-        // 🔥 Firebase
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance(); // Khởi tạo Database
 
-        // 👉 quay lại màn đăng nhập
         tvLogin.setOnClickListener(v -> {
             startActivity(new Intent(this, DangNhapActivity.class));
             finish();
         });
 
-        // 👉 xử lý đăng ký
         btnRegister.setOnClickListener(v -> registerUser());
     }
 
@@ -51,49 +51,38 @@ public class DangKyActivity extends AppCompatActivity {
         String email = edtGmail.getText().toString().trim();
         String password = edtPassword.getText().toString().trim();
 
-        // ❗ validate
-        if (username.isEmpty()) {
-            edtUsername.setError("Nhập tên đăng nhập");
-            return;
-        }
+        if (username.isEmpty()) { edtUsername.setError("Nhập tên đăng nhập"); return; }
+        if (email.isEmpty()) { edtGmail.setError("Nhập email"); return; }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) { edtGmail.setError("Email không hợp lệ"); return; }
+        if (password.isEmpty()) { edtPassword.setError("Nhập mật khẩu"); return; }
+        if (password.length() < 6) { edtPassword.setError("Mật khẩu >= 6 ký tự"); return; }
 
-        if (email.isEmpty()) {
-            edtGmail.setError("Nhập email");
-            return;
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            edtGmail.setError("Email không hợp lệ");
-            return;
-        }
-
-        if (password.isEmpty()) {
-            edtPassword.setError("Nhập mật khẩu");
-            return;
-        }
-
-        if (password.length() < 6) {
-            edtPassword.setError("Mật khẩu >= 6 ký tự");
-            return;
-        }
-
-        // 🔥 Firebase đăng ký
+        // BƯỚC 1: Đăng ký với Auth
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
 
-                        Toast.makeText(this,
-                                "Đăng ký thành công",
-                                Toast.LENGTH_SHORT).show();
+                        // Lấy ID của người dùng vừa tạo
+                        String userId = mAuth.getCurrentUser().getUid();
 
-                        // 👉 quay về login
-                        startActivity(new Intent(this, DangNhapActivity.class));
-                        finish();
+                        // Lưu thông tin và Role "user" vào Firestore
+                        Map<String, Object> userMap = new HashMap<>();
+                        userMap.put("email", email);
+                        userMap.put("username", username);
+                        userMap.put("role", "user"); // MẶC ĐỊNH AI ĐĂNG KÝ CŨNG LÀ USER
+
+                        db.collection("users").document(userId).set(userMap)
+                                .addOnSuccessListener(unused -> {
+                                    Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(this, DangNhapActivity.class));
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(this, "Lỗi lưu dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
 
                     } else {
-                        Toast.makeText(this,
-                                "Lỗi: " + task.getException().getMessage(),
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Lỗi: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

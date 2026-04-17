@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import com.example.petcareapp.R;
 import com.example.petcareapp.ui.user.TrangChu.UTrangChuActivity;
+import com.example.petcareapp.ui.user.UCaiDatActivity;
+import com.example.petcareapp.ui.user.UDaoChoiActivity;
 import com.example.petcareapp.ui.user.ULichHenActivity;
 import com.example.petcareapp.ui.user.UTimPhongActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -17,6 +19,8 @@ public class MenuUser {
         mapMenu.put(R.id.nav_home, UTrangChuActivity.class);
         mapMenu.put(R.id.nav_lichhen, ULichHenActivity.class);
         mapMenu.put(R.id.nav_phongkham, UTimPhongActivity.class);
+        mapMenu.put(R.id.nav_caidat, UCaiDatActivity.class);
+        mapMenu.put(R.id.nav_daochoi, UDaoChoiActivity.class);
     }
     public static void setup(Activity activity, BottomNavigationView navView) {
 

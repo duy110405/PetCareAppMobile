@@ -49,6 +49,7 @@
         <activity android:name=".ui.user.Pet.PetDetailActivity"/>
         <activity android:name=".ui.user.Pet.ThemChuongBaoActivity"/>
         <activity android:name=".ui.user.TrangChu.UTrangChuActivity" />
+        <activity android:name=".ui.user.UCaiDatActivity" />
         <activity android:name=".ui.user.LichHen.AddLichHenActivity"/>
         <activity android:name=".ui.user.ULichHenActivity" />
 

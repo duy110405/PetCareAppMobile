@@ -34,17 +34,17 @@ public class UTrangChuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_trang_chu);
 
-        // 🔥 mapping view
+        //  mapping view
         rvPets = findViewById(R.id.rvPets);
         tvPetCount = findViewById(R.id.tvPetCount);
         btnAddPet = findViewById(R.id.btnAddPet);
 
-        // 🔥 setup RecyclerView
+        //  setup RecyclerView
         adapter = new PetAdapter();
         rvPets.setLayoutManager(new LinearLayoutManager(this));
         rvPets.setAdapter(adapter);
 
-        // 🔥 ViewModel
+        //  ViewModel
         viewModel = new ViewModelProvider(this).get(PetViewModel.class);
 
         String userId = FirebaseAuth.getInstance().getUid();
@@ -53,7 +53,7 @@ public class UTrangChuActivity extends AppCompatActivity {
             viewModel.loadPets(userId);
         }
 
-        // 🔥 observe data
+        //  observe data
         viewModel.getPets().observe(this, pets -> {
             if (pets != null) {
                 adapter.setData(pets);
@@ -61,7 +61,7 @@ public class UTrangChuActivity extends AppCompatActivity {
             }
         });
 
-        // 🔥 click thêm pet
+        //  click thêm pet
         btnAddPet.setOnClickListener(v -> {
             startActivity(new Intent(this, AddPetActivity.class));
         });
@@ -74,7 +74,7 @@ public class UTrangChuActivity extends AppCompatActivity {
 
 
     }
-    // 🔥 reload khi quay lại từ AddPet
+    //  reload khi quay lại từ AddPet
     @Override
     protected void onResume() {
         super.onResume();

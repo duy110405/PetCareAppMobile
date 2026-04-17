@@ -21,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petcareapp.R;
 import com.example.petcareapp.data.model.Pet;
+import com.example.petcareapp.utils.MenuUser;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -104,7 +106,7 @@ public class AddPetActivity extends AppCompatActivity {
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
                     calendar.get(Calendar.DAY_OF_MONTH));
-            // 🔥 chặn ngày tương lai
+            //  chặn ngày tương lai
             dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
             dialog.show();
 

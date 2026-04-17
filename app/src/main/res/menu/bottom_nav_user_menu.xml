@@ -13,11 +13,11 @@
         android:icon="@drawable/ic_location_outline"
         android:title="Phòng khám" />
     <item
-        android:id="@+id/nav_nguoidung"
+        android:id="@+id/nav_daochoi"
         android:icon="@drawable/ic_walk"
         android:title="Dạo chơi" />
     <item
-        android:id="@+id/nav_thoat"
+        android:id="@+id/nav_caidat"
         android:icon="@drawable/ic_settings"
         android:title="Cài đặt" />
 </menu><!--<?xml version="1.0" encoding="utf-8"?>-->
