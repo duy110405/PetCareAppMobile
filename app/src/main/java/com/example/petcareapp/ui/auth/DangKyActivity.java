@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class DangKyActivity extends AppCompatActivity {
 
-    private TextInputEditText edtUsername, edtPassword, edtGmail;
+    private TextInputEditText edtUsername, edtPassword, edtGmail, edtPhone;
     private MaterialButton btnRegister;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db; // Khai báo Database
@@ -32,6 +32,7 @@ public class DangKyActivity extends AppCompatActivity {
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         edtGmail = findViewById(R.id.edtGmail);
+        edtPhone = findViewById(R.id.edtPhone);
         btnRegister = findViewById(R.id.btnRegister);
         TextView tvLogin = findViewById(R.id.tvLogin);
 
@@ -50,10 +51,13 @@ public class DangKyActivity extends AppCompatActivity {
         String username = edtUsername.getText().toString().trim();
         String email = edtGmail.getText().toString().trim();
         String password = edtPassword.getText().toString().trim();
+        String phone = edtPhone.getText().toString().trim();
 
         if (username.isEmpty()) { edtUsername.setError("Nhập tên đăng nhập"); return; }
         if (email.isEmpty()) { edtGmail.setError("Nhập email"); return; }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) { edtGmail.setError("Email không hợp lệ"); return; }
+        if (phone.isEmpty()) {edtPhone.setError("Nhập số điện thoại");return;}
+        if (phone.length() < 9 || phone.length() > 11) {edtPhone.setError("Số điện thoại không hợp lệ");return;}
         if (password.isEmpty()) { edtPassword.setError("Nhập mật khẩu"); return; }
         if (password.length() < 6) { edtPassword.setError("Mật khẩu >= 6 ký tự"); return; }
 
@@ -68,6 +72,7 @@ public class DangKyActivity extends AppCompatActivity {
                         // Lưu thông tin và Role "user" vào Firestore
                         Map<String, Object> userMap = new HashMap<>();
                         userMap.put("email", email);
+                        userMap.put("phone", phone);
                         userMap.put("username", username);
                         userMap.put("role", "user"); // MẶC ĐỊNH AI ĐĂNG KÝ CŨNG LÀ USER
 
