@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:orientation="vertical"
+    android:padding="14dp"
+    android:background="@drawable/bg_card">
+
+    <!-- TOP -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Name + status -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nguyễn Văn A"
+                android:textStyle="bold"
+                android:textSize="16sp"/>
+
+            <!-- Badge ĐÃ KHÓA -->
+            <TextView
+                android:id="@+id/tvLocked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đã khóa"
+                android:textColor="#FFFFFF"
+                android:textSize="11sp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_badge_red"/>
+        </LinearLayout>
+
+        <!-- BUTTON MỞ KHÓA -->
+        <LinearLayout
+            android:id="@+id/btnUnlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="6dp"
+            android:background="@drawable/bg_button_green">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_unlock"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mở khóa"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:layout_marginStart="4dp"/>
+        </LinearLayout>
+
+        <!-- BUTTON KHÓA (trạng thái bình thường) -->
+        <LinearLayout
+            android:id="@+id/btnLock"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="6dp"
+            android:background="@drawable/bg_lock_outline">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_lock"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Khóa"
+                android:textColor="#FF0000"
+                android:textSize="12sp"
+                android:layout_marginStart="4dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- EMAIL -->
+    <TextView
+        android:id="@+id/tvEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="user@example.com"
+        android:textColor="#666"
+        android:textSize="13sp"
+        android:layout_marginTop="4dp"/>
+
+    <!-- PHONE -->
+    <TextView
+        android:id="@+id/tvPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0901234567"
+        android:textColor="#666"
+        android:textSize="13sp"/>
+
+    <!-- LINE -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EEEEEE"
+        android:layout_marginVertical="8dp"/>
+
+    <!-- PET -->
+    <TextView
+        android:id="@+id/tvPet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🐾 2 thú cưng: Max, Luna"
+        android:textSize="13sp"/>
+</LinearLayout>
