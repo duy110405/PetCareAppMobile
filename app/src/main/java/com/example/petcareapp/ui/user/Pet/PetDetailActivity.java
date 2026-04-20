@@ -315,8 +315,14 @@ public class PetDetailActivity extends AppCompatActivity {
                 .document(petId)
                 .delete()
                 .addOnSuccessListener(unused -> {
+
+                    // 🔥 GIẢM PET COUNT
+                    db.collection("users")
+                            .document(userId)
+                            .update("petCount", com.google.firebase.firestore.FieldValue.increment(-1));
+
                     Toast.makeText(this, "Đã xóa", Toast.LENGTH_SHORT).show();
-                    finish(); // quay về UserActivity
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Lỗi xóa: " + e.getMessage(), Toast.LENGTH_SHORT).show();
