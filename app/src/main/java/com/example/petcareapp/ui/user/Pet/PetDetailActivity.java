@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,7 +47,9 @@ public class PetDetailActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String userId, petId;
 
-    private Button btnCapture, btnUpload, btnEditPet;
+    private Button btnCapture, btnUpload, btnEditPet, btnAddAlarm;
+
+    private LinearLayout alarmContainer;
     private Uri imageUri;
 
     private boolean isEditing = false;
@@ -56,6 +59,9 @@ public class PetDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_chi_tiet_pet);
+
+        alarmContainer = findViewById(R.id.alarmContainer);
+        btnAddAlarm = findViewById(R.id.btnAddAlarm);
 
         //  init firebase
         db = FirebaseFirestore.getInstance();
@@ -153,7 +159,17 @@ public class PetDetailActivity extends AppCompatActivity {
             }
         });
 
+        btnAddAlarm.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ThemChuongBaoActivity.class);
+            intent.putExtra("petId", petId);
+            startActivity(intent);
+        });
+
+        listenAlarms();
+
     }
+
+
 
     // ===================== CAMERA RESULT =====================
     private final ActivityResultLauncher<Uri> cameraLauncher =
@@ -299,8 +315,14 @@ public class PetDetailActivity extends AppCompatActivity {
                 .document(petId)
                 .delete()
                 .addOnSuccessListener(unused -> {
+
+                    // 🔥 GIẢM PET COUNT
+                    db.collection("users")
+                            .document(userId)
+                            .update("petCount", com.google.firebase.firestore.FieldValue.increment(-1));
+
                     Toast.makeText(this, "Đã xóa", Toast.LENGTH_SHORT).show();
-                    finish(); // quay về UserActivity
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Lỗi xóa: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -381,5 +403,52 @@ public class PetDetailActivity extends AppCompatActivity {
                 );
     }
 
+    private void listenAlarms() {
 
+        db.collection("users")
+                .document(userId)
+                .collection("pets")
+                .document(petId)
+                .collection("alarms")
+                .addSnapshotListener((value, error) -> {
+
+                    if (error != null || value == null) return;
+
+                    alarmContainer.removeAllViews();
+
+                    for (var doc : value.getDocuments()) {
+
+                        String id = doc.getString("id");
+                        String name = doc.getString("name");
+                        String time = doc.getString("time");
+                        String type = doc.getString("type");
+
+                        addAlarmView(id, name, time, type);
+                    }
+                });
+    }
+
+    private void addAlarmView(String id, String name, String time, String type) {
+
+        View view = getLayoutInflater().inflate(R.layout.item_alarm, null);
+
+        TextView tvName = view.findViewById(R.id.tvAlarmName);
+        TextView tvTime = view.findViewById(R.id.tvAlarmTime);
+        ImageView btnDelete = view.findViewById(R.id.btnDeleteAlarm);
+
+        tvName.setText(name);
+        tvTime.setText(type + " • " + time);
+
+        btnDelete.setOnClickListener(v -> {
+            db.collection("users")
+                    .document(userId)
+                    .collection("pets")
+                    .document(petId)
+                    .collection("alarms")
+                    .document(id)
+                    .delete();
+        });
+
+        alarmContainer.addView(view);
+    }
 }

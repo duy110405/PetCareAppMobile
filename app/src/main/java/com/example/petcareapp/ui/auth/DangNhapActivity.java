@@ -9,11 +9,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petcareapp.R;
+import com.example.petcareapp.data.model.User;
 import com.example.petcareapp.ui.admin.AChiNhanhActivity; // Sửa thành trang chủ Admin của bạn
 import com.example.petcareapp.ui.user.TrangChu.UTrangChuActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore; // THÊM IMPORT
 
 public class DangNhapActivity extends AppCompatActivity {
@@ -38,8 +40,10 @@ public class DangNhapActivity extends AppCompatActivity {
         tvRegister.setOnClickListener(v -> startActivity(new Intent(this, DangKyActivity.class)));
         btnLogin.setOnClickListener(v -> loginUser());
 
-        if (mAuth.getCurrentUser() != null) {
-            checkUserRole(mAuth.getCurrentUser().getUid());
+        // 🔥 nếu đã login trước đó → kiểm tra luôn
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            checkUserStatusAndRole(currentUser.getUid());
         }
     }
 
@@ -47,21 +51,38 @@ public class DangNhapActivity extends AppCompatActivity {
         String email = edtUsername.getText().toString().trim();
         String password = edtPassword.getText().toString().trim();
 
-        // (Validate giữ nguyên...)
-        if (email.isEmpty()) { edtUsername.setError("Nhập email"); return; }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) { edtUsername.setError("Email không hợp lệ"); return; }
-        if (password.isEmpty()) { edtPassword.setError("Nhập mật khẩu"); return; }
-        if (password.length() < 6) { edtPassword.setError("Mật khẩu >= 6 ký tự"); return; }
+        // validate
+        if (email.isEmpty()) {
+            edtUsername.setError("Nhập email");
+            return;
+        }
 
-        // Firebase login
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            edtUsername.setError("Email không hợp lệ");
+            return;
+        }
+
+        if (password.isEmpty()) {
+            edtPassword.setError("Nhập mật khẩu");
+            return;
+        }
+
+        if (password.length() < 6) {
+            edtPassword.setError("Mật khẩu >= 6 ký tự");
+            return;
+        }
+
+        // firebase login
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
+
                     if (task.isSuccessful()) {
                         Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
 
-                        // KHÔNG CHUYỂN TRANG NGAY. MÀ ĐI KIỂM TRA QUYỀN TRƯỚC
-                        String userId = mAuth.getCurrentUser().getUid();
-                        checkUserRole(userId);
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            checkUserStatusAndRole(user.getUid());
+                        }
 
                     } else {
                         Toast.makeText(this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show();
@@ -69,27 +90,33 @@ public class DangNhapActivity extends AppCompatActivity {
                 });
     }
 
-    //Truy vấn Firestore để phân luồng Admin / User
-    private void checkUserRole(String uid) {
-        db.collection("users").document(uid).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String role = documentSnapshot.getString("role");
+    /**
+     * 🔥 Hàm quan trọng nhất:
+     * - Check bị khóa
+     * - Check role
+     * - Điều hướng
+     */
+    private void checkUserStatusAndRole(String uid) {
+        db.collection("users").document(uid)
+                .get()
+                .addOnSuccessListener(doc -> {
 
-                        if ("admin".equals(role)) {
-                            // Là Admin Vào trang Quản lý
-                            startActivity(new Intent(this, AChiNhanhActivity.class)); // Đổi thành trang ALichHenActivity nếu muốn
-                        } else {
-                            // Là User Vào trang Chủ
-                            startActivity(new Intent(this, UTrangChuActivity.class));
-                        }
-                        finish();
-                    } else {
-                        Toast.makeText(this, "Lỗi: Không tìm thấy hồ sơ người dùng", Toast.LENGTH_SHORT).show();
+                    Boolean locked = doc.getBoolean("locked");
+
+                    if (locked != null && locked) {
+                        FirebaseAuth.getInstance().signOut();
+                        Toast.makeText(this, "Tài khoản đã bị khóa!", Toast.LENGTH_LONG).show();
+                        return;
                     }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Lỗi kiểm tra quyền: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    String role = doc.getString("role");
+
+                    if ("admin".equals(role)) {
+                        startActivity(new Intent(this, AChiNhanhActivity.class));
+                    } else {
+                        startActivity(new Intent(this, UTrangChuActivity.class));
+                    }
                 });
     }
+
 }

@@ -32,6 +32,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import com.google.firebase.firestore.FieldValue;
+
 
 public class AddPetActivity extends AppCompatActivity {
     private EditText edtName, edtBreed, edtDob, edtWeight, edtColor;
@@ -294,6 +296,12 @@ public class AddPetActivity extends AppCompatActivity {
                 .document(petId)
                 .set(pet)
                 .addOnSuccessListener(unused -> {
+
+                    // 🔥 CẬP NHẬT PET COUNT
+                    db.collection("users")
+                            .document(userId)
+                            .update("petCount", FieldValue.increment(1));
+
                     Toast.makeText(this, "Thêm thành công", Toast.LENGTH_SHORT).show();
                     finish();
                 })
