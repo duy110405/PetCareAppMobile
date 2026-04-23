@@ -1,5 +1,6 @@
 package com.example.petcareapp.ui.user.LichHen;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petcareapp.R;
@@ -23,26 +25,33 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Adapter hiển thị danh sách lịch hẹn của user
- * Bao gồm:
+ * Adapter hiển thị danh sách lịch hẹn của người dùng
+ *
+ * Chức năng:
  * - Hiển thị thông tin lịch hẹn
- * - Hiển thị trạng thái bằng màu
- * - Cho phép hủy lịch nếu hợp lệ
+ * - Hiển thị màu theo trạng thái
+ * - Cho phép xem chi tiết lịch hẹn
+ * - Cho phép hủy lịch nếu còn hợp lệ
  */
-public class LichHenAdapter extends RecyclerView.Adapter<LichHenAdapter.ViewHolder> {
+public class LichHenAdapter
+        extends RecyclerView.Adapter<LichHenAdapter.ViewHolder> {
 
-    // Danh sách dữ liệu lịch hẹn
-    private List<LichHen> list = new ArrayList<>();
+    /**
+     * Danh sách lịch hẹn
+     */
+    private List<LichHen> appointments = new ArrayList<>();
 
-    // Format thời gian hiển thị
-    private final SimpleDateFormat sdf =
+    /**
+     * Format thời gian hiển thị
+     */
+    private final SimpleDateFormat dateFormat =
             new SimpleDateFormat("HH:mm, dd/MM/yyyy", Locale.getDefault());
 
     /**
-     * Cập nhật dữ liệu cho adapter
+     * Cập nhật dữ liệu mới cho RecyclerView
      */
     public void setData(List<LichHen> list) {
-        this.list = list;
+        appointments = list != null ? list : new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -52,35 +61,10 @@ public class LichHenAdapter extends RecyclerView.Adapter<LichHenAdapter.ViewHold
             @NonNull ViewGroup parent,
             int viewType
     ) {
-        // Inflate layout item lịch hẹn
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_user_lich_hen, parent, false);
 
         return new ViewHolder(view);
-    }
-
-    /**
-     * Format danh sách dịch vụ thành chuỗi hiển thị
-     */
-    private String getServicesText(LichHen item) {
-
-        if (item.getDanhSachDichVu() == null
-                || item.getDanhSachDichVu().isEmpty()) {
-            return "Chưa có dịch vụ";
-        }
-
-        StringBuilder builder = new StringBuilder();
-
-        for (DichVu dv : item.getDanhSachDichVu()) {
-            builder.append(dv.getTen()).append(", ");
-        }
-
-        // Xóa dấu phẩy cuối
-        if (builder.length() > 2) {
-            builder.setLength(builder.length() - 2);
-        }
-
-        return builder.toString();
     }
 
     @Override
@@ -88,103 +72,221 @@ public class LichHenAdapter extends RecyclerView.Adapter<LichHenAdapter.ViewHold
             @NonNull ViewHolder holder,
             int position
     ) {
+        LichHen appointment = appointments.get(position);
 
-        LichHen item = list.get(position);
+        bindAppointmentData(holder, appointment);
+        setupItemClick(holder, appointment);
+        setupCancelButton(holder, appointment);
+    }
 
-        // ===== HIỂN THỊ THÔNG TIN =====
-        holder.tvPetName.setText(item.getTenThuCung());
-        holder.tvService.setText(getServicesText(item));
-        holder.tvStatus.setText(item.getTrangThai());
+    /**
+     * Gán dữ liệu lên item view
+     */
+    private void bindAppointmentData(
+            ViewHolder holder,
+            LichHen appointment
+    ) {
+        holder.tvPetName.setText(appointment.getTenThuCung());
+        holder.tvService.setText(getServicesText(appointment));
+        holder.tvStatus.setText(appointment.getTrangThai());
 
-        if (item.getThoiGianHen() != null) {
+        // Hiển thị thời gian
+        if (appointment.getThoiGianHen() != null) {
             holder.tvTime.setText(
-                    sdf.format(item.getThoiGianHen().toDate())
+                    dateFormat.format(
+                            appointment.getThoiGianHen().toDate()
+                    )
             );
+        } else {
+            holder.tvTime.setText("Chưa có thời gian");
         }
 
-        String status = item.getTrangThai();
-
-        // ===== ĐỔI MÀU THEO TRẠNG THÁI =====
-        if ("Chờ duyệt".equals(status)
-                || "Chờ xác nhận".equals(status)) {
-
-            holder.cvStatus.setCardBackgroundColor(Color.parseColor("#FFA000"));
-
-        } else if ("Đã xác nhận".equals(status)) {
-
-            holder.cvStatus.setCardBackgroundColor(Color.parseColor("#2E64FE"));
-
-        } else if ("Đang khám".equals(status)) {
-
-            holder.cvStatus.setCardBackgroundColor(Color.parseColor("#7B1FA2"));
-
-        } else if ("Hoàn thành".equals(status)) {
-
-            holder.cvStatus.setCardBackgroundColor(Color.parseColor("#4CAF50"));
-
-        } else if ("Đã hủy".equals(status)) {
-
-            holder.cvStatus.setCardBackgroundColor(Color.parseColor("#9E9E9E"));
-        }
-
-        // ===== HIỂN THỊ NÚT HỦY =====
-        boolean canCancel =
-                "Chờ duyệt".equals(status)
-                        || "Chờ xác nhận".equals(status)
-                        || "Đã xác nhận".equals(status);
-
-        holder.btnCancelAppointment.setVisibility(
-                canCancel ? View.VISIBLE : View.GONE
+        // Hiển thị màu trạng thái
+        setupStatusColor(
+                holder.cvStatus,
+                appointment.getTrangThai()
         );
-        // ===== CLICK XEM CHI TIẾT =====
+
+        // Hiển thị nút hủy
+        setupCancelButtonVisibility(
+                holder.btnCancelAppointment,
+                appointment.getTrangThai()
+        );
+    }
+
+    /**
+     * Chuyển danh sách dịch vụ thành text
+     */
+    private String getServicesText(LichHen appointment) {
+        List<DichVu> services = appointment.getDanhSachDichVu();
+
+        if (services == null || services.isEmpty()) {
+            return "Chưa có dịch vụ";
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        for (DichVu service : services) {
+            builder.append(service.getTen())
+                    .append(", ");
+        }
+
+        // Xóa dấu ", " cuối
+        builder.setLength(builder.length() - 2);
+
+        return builder.toString();
+    }
+
+    /**
+     * Thiết lập màu theo trạng thái
+     */
+    private void setupStatusColor(
+            MaterialCardView statusCard,
+            String status
+    ) {
+        int color;
+
+        switch (status) {
+            case "Chờ duyệt":
+            case "Chờ xác nhận":
+                color = Color.parseColor("#FFA000");
+                break;
+
+            case "Đã xác nhận":
+                color = Color.parseColor("#2E64FE");
+                break;
+
+            case "Đang khám":
+                color = Color.parseColor("#7B1FA2");
+                break;
+
+            case "Hoàn thành":
+                color = Color.parseColor("#4CAF50");
+                break;
+
+            case "Đã hủy":
+                color = Color.parseColor("#9E9E9E");
+                break;
+
+            default:
+                color = Color.parseColor("#BDBDBD");
+                break;
+        }
+
+        statusCard.setCardBackgroundColor(color);
+    }
+
+    /**
+     * Kiểm tra có được phép hủy không
+     */
+    private boolean canCancelAppointment(String status) {
+        return "Chờ duyệt".equals(status)
+                || "Chờ xác nhận".equals(status)
+                || "Đã xác nhận".equals(status);
+    }
+
+    /**
+     * Hiển thị / ẩn nút hủy
+     */
+    private void setupCancelButtonVisibility(
+            MaterialButton cancelButton,
+            String status
+    ) {
+        cancelButton.setVisibility(
+                canCancelAppointment(status)
+                        ? View.VISIBLE
+                        : View.GONE
+        );
+    }
+
+    /**
+     * Click item -> mở trang chi tiết
+     */
+    private void setupItemClick(
+            ViewHolder holder,
+            LichHen appointment
+    ) {
         holder.itemView.setOnClickListener(v -> {
-            android.content.Intent intent = new android.content.Intent(v.getContext(), ChiTietLichHenActivity.class);
-            intent.putExtra("lichHenId", item.getId());
+            Intent intent = new Intent(
+                    v.getContext(),
+                    ChiTietLichHenActivity.class
+            );
+
+            intent.putExtra("lichHenId", appointment.getId());
             v.getContext().startActivity(intent);
         });
+    }
 
-        // ===== XỬ LÝ HỦY LỊCH =====
+    /**
+     * Xử lý nút hủy lịch
+     */
+    private void setupCancelButton(
+            ViewHolder holder,
+            LichHen appointment
+    ) {
         holder.btnCancelAppointment.setOnClickListener(v -> {
-
-            // lấy vị trí an toàn tại thời điểm click
-            int adapterPos = holder.getAdapterPosition();
-
-            new androidx.appcompat.app.AlertDialog.Builder(v.getContext())
-                    .setTitle("Xác nhận hủy")
-                    .setMessage("Bạn có chắc muốn hủy lịch hẹn này không?")
-                    .setPositiveButton("Đồng ý", (dialog, which) -> {
-
-                        // UPDATE trạng thái lên Firestore
-                        FirebaseFirestore.getInstance()
-                                .collection("LichHen")
-                                .document(item.getId())
-                                .update("trangThai", "Đã hủy")
-                                .addOnSuccessListener(aVoid -> {
-                                    item.setTrangThai("Đã hủy");
-                                    Toast.makeText(
-                                            v.getContext(),
-                                            "Đã hủy lịch",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-
-                                    notifyDataSetChanged();
-
-
-                                });
-
-                    })
-                    .setNegativeButton("Không", null)
-                    .show();
+            showCancelDialog(v, appointment);
         });
+    }
+
+    /**
+     * Dialog xác nhận hủy
+     */
+    private void showCancelDialog(
+            View view,
+            LichHen appointment
+    ) {
+        new AlertDialog.Builder(view.getContext())
+                .setTitle("Xác nhận hủy")
+                .setMessage("Bạn có chắc muốn hủy lịch hẹn này không?")
+                .setPositiveButton("Đồng ý",
+                        (dialog, which) ->
+                                cancelAppointment(view, appointment)
+                )
+                .setNegativeButton("Không", null)
+                .show();
+    }
+
+    /**
+     * Hủy lịch trên Firestore
+     */
+    private void cancelAppointment(
+            View view,
+            LichHen appointment
+    ) {
+        FirebaseFirestore.getInstance()
+                .collection("LichHen")
+                .document(appointment.getId())
+                .update("trangThai", "Đã hủy")
+                .addOnSuccessListener(unused -> {
+
+                    // Update local data
+                    appointment.setTrangThai("Đã hủy");
+
+                    Toast.makeText(
+                            view.getContext(),
+                            "Đã hủy lịch",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    notifyDataSetChanged();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(
+                                view.getContext(),
+                                "Hủy lịch thất bại",
+                                Toast.LENGTH_SHORT
+                        ).show()
+                );
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return appointments.size();
     }
 
     /**
-     * ViewHolder giữ view item lịch hẹn
+     * ViewHolder chứa view của item
      */
     static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -196,18 +298,18 @@ public class LichHenAdapter extends RecyclerView.Adapter<LichHenAdapter.ViewHold
         MaterialCardView cvStatus;
         MaterialButton btnCancelAppointment;
 
-        ViewHolder(View v) {
-            super(v);
+        ViewHolder(View view) {
+            super(view);
 
-            tvPetName = v.findViewById(R.id.tvPetName);
-            tvService = v.findViewById(R.id.tvService);
-            tvTime = v.findViewById(R.id.tvTime);
-            tvStatus = v.findViewById(R.id.tvStatus);
+            tvPetName = view.findViewById(R.id.tvPetName);
+            tvService = view.findViewById(R.id.tvService);
+            tvTime = view.findViewById(R.id.tvTime);
+            tvStatus = view.findViewById(R.id.tvStatus);
 
-            cvStatus = v.findViewById(R.id.cvStatus);
+            cvStatus = view.findViewById(R.id.cvStatus);
 
             btnCancelAppointment =
-                    v.findViewById(R.id.btnCancelAppointment);
+                    view.findViewById(R.id.btnCancelAppointment);
         }
     }
 }

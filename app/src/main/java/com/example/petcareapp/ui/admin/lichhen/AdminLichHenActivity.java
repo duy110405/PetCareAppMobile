@@ -25,39 +25,66 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Màn hình quản lý danh sách lịch hẹn dành cho Admin.
+ *
+ * Chức năng:
+ * - Xem toàn bộ lịch hẹn
+ * - Lọc theo trạng thái
+ * - Lọc theo chi nhánh
+ * - Lọc theo ngày
+ * - Thống kê nhanh số lượng lịch hẹn
+ */
 public class AdminLichHenActivity extends AppCompatActivity {
 
+    // ===== Bộ lọc =====
     private AutoCompleteTextView spStatus, spBranch;
     private Button btnPickDate, btnFilter;
+
+    // ===== UI hiển thị =====
     private View tvEmpty;
     private TextView tvCount;
     private RecyclerView recyclerView;
-    private AdminLichHenAdapter adapter;
 
-    private final List<LichHen> list = new ArrayList<>();
-    private final List<String> branchNames = new ArrayList<>();
-
-    private Date selectedDate = null;
-
+    // ===== Dashboard thống kê =====
     private TextView tvPendingCount;
     private TextView tvApprovedCount;
     private TextView tvCancelledCount;
     private TextView tvTotalCount;
+
+    // ===== Adapter + Data =====
+    private AdminLichHenAdapter adapter;
+    private final List<LichHen> list = new ArrayList<>();
+    private final List<String> branchNames = new ArrayList<>();
+
+    // Ngày được chọn để lọc
+    private Date selectedDate = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_lich_hen);
 
+        // Khởi tạo view
         initView();
+
+        // Thiết lập dữ liệu bộ lọc trạng thái
         setupStatusSpinner();
+
+        // Thiết lập RecyclerView
         setupRecyclerView();
+
+        // Gán sự kiện
         setupEvent();
 
+        // Load dữ liệu ban đầu
         loadBranches();
         loadAppointments();
     }
 
+    /**
+     * Thu gọn phần filter sau khi người dùng áp dụng bộ lọc.
+     */
     private void collapseFilter(String status, String branch) {
         findViewById(R.id.filterContainer).setVisibility(View.GONE);
         findViewById(R.id.tvFilterSummary).setVisibility(View.VISIBLE);
@@ -66,6 +93,9 @@ public class AdminLichHenActivity extends AppCompatActivity {
         tv.setText("Đang lọc: " + status + " • " + branch);
     }
 
+    /**
+     * Ánh xạ các thành phần giao diện.
+     */
     private void initView() {
         spStatus = findViewById(R.id.spStatus);
         spBranch = findViewById(R.id.spBranch);
@@ -77,12 +107,16 @@ public class AdminLichHenActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         tvCount = findViewById(R.id.tvCount);
+
         tvPendingCount = findViewById(R.id.tvPendingCount);
         tvApprovedCount = findViewById(R.id.tvApprovedCount);
         tvCancelledCount = findViewById(R.id.tvCancelledCount);
         tvTotalCount = findViewById(R.id.tvTotalCount);
     }
 
+    /**
+     * Cập nhật dashboard thống kê nhanh.
+     */
     private void updateDashboard() {
         int pending = 0;
         int approved = 0;
@@ -106,11 +140,14 @@ public class AdminLichHenActivity extends AppCompatActivity {
         tvTotalCount.setText(list.size() + "\nTổng");
     }
 
+    /**
+     * Cập nhật text số lượng kết quả sau khi lọc.
+     */
     private void updateCountText() {
         int count = list.size();
 
-        // SỬA LỖI Ở ĐÂY: Dùng getText() thay vì getSelectedItem()
         String status = spStatus.getText().toString().trim();
+
         if (status.isEmpty()) {
             status = "Tất cả";
         }
@@ -133,6 +170,9 @@ public class AdminLichHenActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Thiết lập danh sách trạng thái cho bộ lọc.
+     */
     private void setupStatusSpinner() {
         String[] statuses = {
                 "Tất cả",
@@ -150,9 +190,14 @@ public class AdminLichHenActivity extends AppCompatActivity {
                 );
 
         spStatus.setAdapter(statusAdapter);
-        spStatus.setText("Tất cả", false); // Set giá trị mặc định tránh bị trống
+
+        // Giá trị mặc định
+        spStatus.setText("Tất cả", false);
     }
 
+    /**
+     * Tải danh sách chi nhánh từ Firebase.
+     */
     private void loadBranches() {
         FirebaseFirestore.getInstance()
                 .collection("ChiNhanh")
@@ -178,16 +223,18 @@ public class AdminLichHenActivity extends AppCompatActivity {
                             );
 
                     spBranch.setAdapter(branchAdapter);
-                    spBranch.setText("Tất cả", false); // Set giá trị mặc định
+                    spBranch.setText("Tất cả", false);
                 });
     }
 
+    /**
+     * Thiết lập RecyclerView và adapter.
+     */
     private void setupRecyclerView() {
         adapter = new AdminLichHenAdapter(this, list);
 
-        adapter.setOnStatusChangedListener(() -> {
-            loadAppointments();
-        });
+        // Reload lại danh sách khi trạng thái thay đổi
+        adapter.setOnStatusChangedListener(this::loadAppointments);
 
         recyclerView.setLayoutManager(
                 new LinearLayoutManager(this)
@@ -196,6 +243,9 @@ public class AdminLichHenActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
+    /**
+     * Gán sự kiện cho các nút thao tác.
+     */
     private void setupEvent() {
         btnPickDate.setOnClickListener(v -> showDatePicker());
 
@@ -203,26 +253,29 @@ public class AdminLichHenActivity extends AppCompatActivity {
 
             loadAppointments();
 
-            // SỬA LỖI Ở ĐÂY: Dùng getText()
             String status = spStatus.getText().toString().trim();
-            if(status.isEmpty()) status = "Tất cả";
+            if (status.isEmpty()) status = "Tất cả";
 
             String branch = spBranch.getText().toString().trim();
-            if(branch.isEmpty()) branch = "Tất cả";
+            if (branch.isEmpty()) branch = "Tất cả";
 
             collapseFilter(status, branch);
         });
 
+        // Click để mở lại phần filter
         findViewById(R.id.tvFilterSummary).setOnClickListener(v -> {
             findViewById(R.id.filterContainer).setVisibility(View.VISIBLE);
             findViewById(R.id.tvFilterSummary).setVisibility(View.GONE);
         });
     }
 
+    /**
+     * Hiển thị DatePicker để lọc theo ngày.
+     */
     private void showDatePicker() {
         Calendar cal = Calendar.getInstance();
 
-        // Nếu trước đó đã chọn ngày thì mở đúng ngày đó, nếu chưa thì mở ngày hiện tại
+        // Nếu đã chọn ngày trước đó thì mở đúng ngày đó
         if (selectedDate != null) {
             cal.setTime(selectedDate);
         }
@@ -231,36 +284,54 @@ public class AdminLichHenActivity extends AppCompatActivity {
                 this,
                 (view, year, month, dayOfMonth) -> {
                     cal.set(year, month, dayOfMonth);
+
                     selectedDate = cal.getTime();
-                    btnPickDate.setText(String.format("Ngày: %02d/%02d/%d", dayOfMonth, month + 1, year));
+
+                    btnPickDate.setText(
+                            String.format(
+                                    "Ngày: %02d/%02d/%d",
+                                    dayOfMonth,
+                                    month + 1,
+                                    year
+                            )
+                    );
                 },
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
                 cal.get(Calendar.DAY_OF_MONTH)
         );
 
-        // THÊM NÚT ĐỂ XÓA BỘ LỌC NGÀY
-        dialog.setButton(DatePickerDialog.BUTTON_NEUTRAL, "Tất cả", (d, which) -> {
-            selectedDate = null;
-            btnPickDate.setText("Ngày: Tất cả");
-        });
+        // Nút reset bộ lọc ngày
+        dialog.setButton(
+                DatePickerDialog.BUTTON_NEUTRAL,
+                "Tất cả",
+                (d, which) -> {
+                    selectedDate = null;
+                    btnPickDate.setText("Ngày: Tất cả");
+                }
+        );
 
         dialog.show();
     }
 
+    /**
+     * Tải danh sách lịch hẹn theo bộ lọc hiện tại.
+     */
     private void loadAppointments() {
-        // Khởi tạo Query cơ bản (Lấy tất cả, sắp xếp mới nhất lên đầu)
+
+        // Query mặc định: mới nhất lên đầu
         Query query = FirebaseFirestore.getInstance()
                 .collection("LichHen")
                 .orderBy("thoiGianHen", Query.Direction.DESCENDING);
 
-        // 1. NẾU CÓ CHỌN NGÀY THÌ MỚI THÊM ĐIỀU KIỆN LỌC THEO NGÀY
+        // ===== Lọc theo ngày =====
         if (selectedDate != null) {
             Calendar startCal = Calendar.getInstance();
             startCal.setTime(selectedDate);
             startCal.set(Calendar.HOUR_OF_DAY, 0);
             startCal.set(Calendar.MINUTE, 0);
             startCal.set(Calendar.SECOND, 0);
+
             Date startOfDay = startCal.getTime();
 
             Calendar endCal = Calendar.getInstance();
@@ -268,13 +339,21 @@ public class AdminLichHenActivity extends AppCompatActivity {
             endCal.set(Calendar.HOUR_OF_DAY, 23);
             endCal.set(Calendar.MINUTE, 59);
             endCal.set(Calendar.SECOND, 59);
+
             Date endOfDay = endCal.getTime();
 
-            query = query.whereGreaterThanOrEqualTo("thoiGianHen", startOfDay)
-                    .whereLessThanOrEqualTo("thoiGianHen", endOfDay);
+            query = query
+                    .whereGreaterThanOrEqualTo(
+                            "thoiGianHen",
+                            startOfDay
+                    )
+                    .whereLessThanOrEqualTo(
+                            "thoiGianHen",
+                            endOfDay
+                    );
         }
 
-        // 2. LỌC THEO TRẠNG THÁI VÀ CHI NHÁNH
+        // ===== Lọc theo trạng thái và chi nhánh =====
         String status = spStatus.getText().toString().trim();
         if (status.isEmpty()) status = "Tất cả";
 
@@ -284,16 +363,18 @@ public class AdminLichHenActivity extends AppCompatActivity {
         if (!status.equals("Tất cả")) {
             query = query.whereEqualTo("trangThai", status);
         }
+
         if (!branch.equals("Tất cả")) {
             query = query.whereEqualTo("tenChiNhanh", branch);
         }
 
-        // 3. Thực thi Query (Phần này và phía dưới bạn giữ nguyên code cũ)
+        // ===== Thực thi query =====
         query.get().addOnSuccessListener(snapshot -> {
             list.clear();
 
             for (var doc : snapshot.getDocuments()) {
                 LichHen item = doc.toObject(LichHen.class);
+
                 if (item == null) continue;
 
                 item.setId(doc.getId());
@@ -301,15 +382,20 @@ public class AdminLichHenActivity extends AppCompatActivity {
             }
 
             adapter.updateList(list);
+
             updateCountText();
             updateDashboard();
 
             tvEmpty.setVisibility(
                     list.isEmpty() ? TextView.VISIBLE : TextView.GONE
             );
+
         }).addOnFailureListener(e -> {
-            // Hiển thị lỗi nếu thiếu Index
-            Toast.makeText(this, "Lỗi tải dữ liệu. Cần tạo Index Firebase!", Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    this,
+                    "Lỗi tải dữ liệu. Cần tạo Index Firebase!",
+                    Toast.LENGTH_LONG
+            ).show();
         });
     }
 }

@@ -223,61 +223,182 @@ public class AddLichHenActivity extends AppCompatActivity {
     }
 
     private void thucHienDatLich() {
-        if (selectedPet == null || selectedBranch == null || selectedServices.isEmpty() || selectedTime.isEmpty() || edtSelectDate.getText().toString().isEmpty()) {
-            Toast.makeText(this, "Vui lòng chọn đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
+        if (!isInputValid()) {
+            showToast("Vui lòng chọn đầy đủ thông tin!");
             return;
         }
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = FirebaseAuth.getInstance().getUid();
 
         if (userId == null) {
-            Toast.makeText(this, "Người dùng chưa đăng nhập", Toast.LENGTH_SHORT).show();
+            showToast("Người dùng chưa đăng nhập");
             return;
         }
 
-        db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
-            String tenChu = documentSnapshot.exists() ? documentSnapshot.getString("hoTen") : "Khách hàng";
-            String sdt = documentSnapshot.exists() ? documentSnapshot.getString("soDienThoai") : "Chưa cập nhật";
-
-            String lichHenId = db.collection("LichHen").document().getId();
-            Calendar calendar = (Calendar) selectedDate.clone();
-
-            try {
-                String[] timeParts = selectedTime.replace(" ", "").split(":");
-                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeParts[0]));
-                calendar.set(Calendar.MINUTE, 0);
-                calendar.set(Calendar.SECOND, 0);
-            } catch (Exception e) {
-                Toast.makeText(this, "Lỗi định dạng giờ", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            LichHen lichHen = new LichHen();
-            lichHen.setId(lichHenId);
-            lichHen.setUserId(userId);
-            lichHen.setPetId(selectedPet.getId());
-            lichHen.setChiNhanhId(selectedBranch.getId());
-            lichHen.setThoiGianHen(new Timestamp(calendar.getTime()));
-            lichHen.setDanhSachDichVu(selectedServices);
-            lichHen.setTongTien(totalPrice);
-            lichHen.setGhiChu(edtNotes.getText().toString().trim());
-            lichHen.setLyDoTuChoi("");
-            lichHen.setTrangThai("Chờ duyệt");
-            lichHen.setTenThuCung(selectedPet.getName());
-            lichHen.setTenChiNhanh(selectedBranch.getTenChiNhanh());
-            lichHen.setTenChuThuCung(tenChu);
-            lichHen.setSoDienThoai(sdt);
-
-            db.collection("LichHen").document(lichHenId).set(lichHen)
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(this, "Đặt lịch thành công!", Toast.LENGTH_SHORT).show();
-                        finish();
-                    })
-                    .addOnFailureListener(e -> Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-        });
+        loadUserInfoAndCreateAppointment(userId);
     }
 
+    private boolean isInputValid() {
+        return selectedPet != null
+                && selectedBranch != null
+                && !selectedServices.isEmpty()
+                && !selectedTime.isEmpty()
+                && edtSelectDate.getText() != null
+                && !edtSelectDate.getText().toString().trim().isEmpty();
+    }
+
+    private void loadUserInfoAndCreateAppointment(String userId) {
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(document -> {
+                    String tenChu = getUserName(document);
+                    String soDienThoai = getUserPhone(document);
+
+                    createAppointment(
+                            userId,
+                            tenChu,
+                            soDienThoai
+                    );
+                })
+                .addOnFailureListener(e ->
+                        showToast("Không thể tải thông tin người dùng")
+                );
+    }
+
+    private String getUserName(DocumentSnapshot document) {
+        if (document.exists()) {
+            String name = document.getString("hoTen");
+            return name != null ? name : "Khách hàng";
+        }
+        return "Khách hàng";
+    }
+
+    private String getUserPhone(DocumentSnapshot document) {
+        if (document.exists()) {
+            String phone = document.getString("soDienThoai");
+            return phone != null ? phone : "Chưa cập nhật";
+        }
+        return "Chưa cập nhật";
+    }
+
+    private void createAppointment(
+            String userId,
+            String tenChu,
+            String soDienThoai
+    ) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        String lichHenId =
+                db.collection("LichHen")
+                        .document()
+                        .getId();
+
+        Timestamp thoiGianHen = buildAppointmentTime();
+
+        if (thoiGianHen == null) {
+            showToast("Lỗi định dạng giờ");
+            return;
+        }
+
+        LichHen lichHen = buildLichHen(
+                lichHenId,
+                userId,
+                tenChu,
+                soDienThoai,
+                thoiGianHen
+        );
+
+        saveAppointment(db, lichHenId, lichHen);
+    }
+
+    private Timestamp buildAppointmentTime() {
+        try {
+            Calendar calendar =
+                    (Calendar) selectedDate.clone();
+
+            String[] timeParts =
+                    selectedTime.replace(" ", "")
+                            .split(":");
+
+            calendar.set(
+                    Calendar.HOUR_OF_DAY,
+                    Integer.parseInt(timeParts[0])
+            );
+
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+
+            return new Timestamp(calendar.getTime());
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private LichHen buildLichHen(
+            String lichHenId,
+            String userId,
+            String tenChu,
+            String soDienThoai,
+            Timestamp thoiGianHen
+    ) {
+        LichHen lichHen = new LichHen();
+
+        lichHen.setId(lichHenId);
+        lichHen.setUserId(userId);
+        lichHen.setPetId(selectedPet.getId());
+        lichHen.setChiNhanhId(selectedBranch.getId());
+        lichHen.setThoiGianHen(thoiGianHen);
+
+        lichHen.setDanhSachDichVu(selectedServices);
+        lichHen.setTongTien(totalPrice);
+
+        lichHen.setGhiChu(
+                edtNotes.getText() != null
+                        ? edtNotes.getText().toString().trim()
+                        : ""
+        );
+
+        lichHen.setLyDoTuChoi("");
+        lichHen.setTrangThai("Chờ duyệt");
+
+        lichHen.setTenThuCung(selectedPet.getName());
+        lichHen.setTenChiNhanh(
+                selectedBranch.getTenChiNhanh()
+        );
+
+        lichHen.setTenChuThuCung(tenChu);
+        lichHen.setSoDienThoai(soDienThoai);
+
+        return lichHen;
+    }
+
+    private void saveAppointment(
+            FirebaseFirestore db,
+            String lichHenId,
+            LichHen lichHen
+    ) {
+        db.collection("LichHen")
+                .document(lichHenId)
+                .set(lichHen)
+                .addOnSuccessListener(unused -> {
+                    showToast("Đặt lịch thành công!");
+                    finish();
+                })
+                .addOnFailureListener(e ->
+                        showToast("Lỗi: " + e.getMessage())
+                );
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(
+                this,
+                message,
+                Toast.LENGTH_SHORT
+        ).show();
+    }
     // ================= ADAPTERS INNER CLASSES =================
 
     // 1. Adapter cho Dịch vụ
