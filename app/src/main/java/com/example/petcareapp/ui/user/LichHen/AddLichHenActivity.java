@@ -298,19 +298,35 @@ public class AddLichHenActivity extends AppCompatActivity {
             return;
         }
 
-        LichHen lichHen = new LichHen(
-                lichHenId,
-                userId,
-                selectedPet.getId(),
-                selectedBranch.getId(),
-                new Timestamp(calendar.getTime()),
-                new ArrayList<>(selectedServices),
-                totalPrice,
-                edtNotes.getText() == null
-                        ? ""
-                        : edtNotes.getText().toString().trim(),
-                "Chờ duyệt",
-                selectedPet.getName(),
+        LichHen lichHen = new LichHen();
+
+        lichHen.setId(lichHenId);
+        lichHen.setUserId(userId);
+
+        lichHen.setPetId(selectedPet.getId());
+        lichHen.setChiNhanhId(selectedBranch.getId());
+
+        lichHen.setThoiGianHen(
+                new Timestamp(calendar.getTime())
+        );
+
+        lichHen.setDanhSachDichVu(selectedServices);
+
+        lichHen.setTongTien(totalPrice);
+
+        lichHen.setGhiChu(
+                edtNotes.getText().toString().trim()
+        );
+
+        lichHen.setLyDoTuChoi("");
+
+        lichHen.setTrangThai("Chờ duyệt");
+
+        lichHen.setTenThuCung(
+                selectedPet.getName()
+        );
+
+        lichHen.setTenChiNhanh(
                 selectedBranch.getTenChiNhanh()
         );
 

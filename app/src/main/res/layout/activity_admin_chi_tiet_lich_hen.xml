@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chi tiết lịch hẹn"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/txtPetName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tên thú cưng"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/txtTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thời gian"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/txtBranch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chi nhánh"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/txtStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trạng thái"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/txtNote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ghi chú"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/txtRejectReason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lý do từ chối"
+            android:visibility="gone"
+            android:layout_marginTop="8dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnApprove"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Duyệt"
+            android:layout_marginTop="24dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Từ chối"
+            android:layout_marginTop="12dp"/>
+
+    </LinearLayout>
+
+</ScrollView>

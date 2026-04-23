@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petcareapp.R;
 import com.example.petcareapp.ui.admin.AChiNhanhActivity; // Sửa thành trang chủ Admin của bạn
+import com.example.petcareapp.ui.admin.lichhen.AdminLichHenActivity;
 import com.example.petcareapp.ui.user.TrangChu.UTrangChuActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -81,7 +82,7 @@ public class DangNhapActivity extends AppCompatActivity {
                             startActivity(new Intent(this, AChiNhanhActivity.class)); // Đổi thành trang ALichHenActivity nếu muốn
                         } else {
                             // Là User Vào trang Chủ
-                            startActivity(new Intent(this, UTrangChuActivity.class));
+                            startActivity(new Intent(this, AdminLichHenActivity.class));
                         }
                         finish();
                     } else {

@@ -38,8 +38,10 @@
             </intent-filter>
         </receiver>
 
-
-
+        <activity
+            android:name=".ui.admin.lichhen.AdminChiTietLichHenActivity" />
+        <activity
+            android:name=".ui.admin.lichhen.AdminLichHenActivity" />
         <activity android:name=".ui.auth.DangKyActivity"/>
         <activity android:name=".ui.main.MainActivity"/>
         <activity android:name=".ui.admin.AChiNhanhActivity"/>
