@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petcareapp.R;
 import com.example.petcareapp.data.model.LichHen;
+import com.example.petcareapp.data.model.ThongBao;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -114,21 +115,61 @@ public class AdminChiTietLichHenActivity extends AppCompatActivity {
             FirebaseFirestore.getInstance()
                     .collection("LichHen")
                     .document(lichHenId)
-                    .update("trangThai", "Đã xác nhận")
-                    .addOnSuccessListener(unused -> {
-                        Toast.makeText(
-                                this,
-                                "Đã duyệt lịch hẹn",
-                                Toast.LENGTH_SHORT
-                        ).show();
+                    .get()
+                    .addOnSuccessListener(snapshot -> {
 
-                        loadDetail();
+                        if (!snapshot.exists()) return;
+
+                        LichHen item = snapshot.toObject(LichHen.class);
+
+                        if (item == null) return;
+
+                        String currentStatus =
+                                snapshot.getString("trangThai");
+
+                        if (!"Chờ duyệt".equals(currentStatus)) {
+                            Toast.makeText(
+                                    this,
+                                    "Lịch hẹn đã được xử lý",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            loadDetail();
+                            return;
+                        }
+
+                        snapshot.getReference()
+                                .update("trangThai", "Đã xác nhận")
+                                .addOnSuccessListener(unused -> {
+
+                                    guiThongBaoChoUser(
+                                            item.getUserId(),
+                                            "Lịch hẹn của bạn đã được xác nhận"
+                                    );
+
+                                    Toast.makeText(
+                                            this,
+                                            "Đã duyệt lịch hẹn",
+                                            Toast.LENGTH_SHORT
+                                    ).show();
+
+                                    loadDetail();
+                                });
                     });
         });
 
 
         // TỪ CHỐI
         btnReject.setOnClickListener(v -> showRejectDialog());
+    }
+    private void guiThongBaoChoUser(
+            String userId,
+            String noiDung
+    ) {
+        ThongBao thongBao = new ThongBao(userId, noiDung);
+
+        FirebaseFirestore.getInstance()
+                .collection("ThongBao")
+                .add(thongBao);
     }
     private void showRejectDialog() {
 
@@ -161,21 +202,48 @@ public class AdminChiTietLichHenActivity extends AppCompatActivity {
                         FirebaseFirestore.getInstance()
                                 .collection("LichHen")
                                 .document(lichHenId)
-                                .update(
-                                        "trangThai", "Đã hủy",
-                                        "lyDoTuChoi", reason
-                                )
-                                .addOnSuccessListener(unused -> {
+                                .get()
+                                .addOnSuccessListener(snapshot -> {
 
-                                    Toast.makeText(
-                                            this,
-                                            "Đã từ chối lịch hẹn",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
+                                    if (!snapshot.exists()) return;
 
-                                    dialog.dismiss();
+                                    String currentStatus =
+                                            snapshot.getString("trangThai");
 
-                                    loadDetail();
+                                    if (!"Chờ duyệt".equals(currentStatus)) {
+                                        Toast.makeText(
+                                                this,
+                                                "Lịch hẹn đã được xử lý trước đó",
+                                                Toast.LENGTH_SHORT
+                                        ).show();
+                                        dialog.dismiss();
+                                        loadDetail();
+                                        return;
+                                    }
+
+                                    snapshot.getReference()
+                                            .update(
+                                                    "trangThai", "Đã hủy",
+                                                    "lyDoTuChoi", reason
+                                            )
+                                            .addOnSuccessListener(unused -> {
+                                                LichHen item = snapshot.toObject(LichHen.class);
+
+                                                if (item != null) {
+                                                    guiThongBaoChoUser(
+                                                            item.getUserId(),
+                                                            "Lịch hẹn bị từ chối. Lý do: " + reason
+                                                    );
+                                                }
+                                                Toast.makeText(
+                                                        this,
+                                                        "Đã từ chối lịch hẹn",
+                                                        Toast.LENGTH_SHORT
+                                                ).show();
+
+                                                dialog.dismiss();
+                                                loadDetail();
+                                            });
                                 });
                     });
         });

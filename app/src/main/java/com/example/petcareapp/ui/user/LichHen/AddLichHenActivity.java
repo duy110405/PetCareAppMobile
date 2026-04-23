@@ -1,5 +1,6 @@
 package com.example.petcareapp.ui.user.LichHen;
 
+import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -23,11 +24,15 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddLichHenActivity extends AppCompatActivity {
 
@@ -48,7 +53,12 @@ public class AddLichHenActivity extends AppCompatActivity {
 
     private int totalPrice = 0;
     private String selectedTime = "";
+    private Calendar selectedDate = Calendar.getInstance();
+    private TextView tvSelectedDate;
+    private MaterialButton btnSelectDate;
 
+    private List<MaterialButton> timeButtons = new ArrayList<>();
+    private static final int MAX_SLOT = 3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,12 +85,102 @@ public class AddLichHenActivity extends AppCompatActivity {
         cardDichVu1 = findViewById(R.id.cardDichVu1);
         cardDichVu2 = findViewById(R.id.cardDichVu2);
         cardDichVu3 = findViewById(R.id.cardDichVu3);
+        tvSelectedDate = findViewById(R.id.tvSelectedDate);
+        btnSelectDate = findViewById(R.id.btnSelectDate);
+
+
     }
 
     private void setupEvents() {
         btnBack.setOnClickListener(v -> finish());
         btnCancel.setOnClickListener(v -> finish());
+        btnSelectDate.setOnClickListener(v -> showDatePicker());
         btnAddAppointmentSubmit.setOnClickListener(v -> thucHienDatLich());
+    }
+    private void showDatePicker() {
+        if (selectedBranch == null) {
+            Toast.makeText(
+                    this,
+                    "Vui lòng chọn chi nhánh trước",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        Calendar now = Calendar.getInstance();
+
+        DatePickerDialog dialog = new DatePickerDialog(
+                this,
+                (view, year, month, dayOfMonth) -> {
+                    selectedDate.set(year, month, dayOfMonth);
+
+                    String text = dayOfMonth + "/" +
+                            (month + 1) + "/" + year;
+
+                    tvSelectedDate.setText(text);
+
+                    loadAvailableTimeSlots();
+                },
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH)
+        );
+
+        dialog.getDatePicker().setMinDate(
+                System.currentTimeMillis()
+        );
+
+        dialog.show();
+    }
+
+    private void loadAvailableTimeSlots() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Calendar start = (Calendar) selectedDate.clone();
+        start.set(Calendar.HOUR_OF_DAY, 0);
+        start.set(Calendar.MINUTE, 0);
+
+        Calendar end = (Calendar) start.clone();
+        end.add(Calendar.DAY_OF_MONTH, 1);
+
+        db.collection("LichHen")
+                .whereEqualTo("chiNhanhId", selectedBranch.getId())
+                .whereGreaterThanOrEqualTo(
+                        "thoiGianHen",
+                        new Timestamp(start.getTime())
+                )
+                .whereLessThan(
+                        "thoiGianHen",
+                        new Timestamp(end.getTime())
+                )
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    updateTimeButtons(snapshot);
+                });
+    }
+    private void updateTimeButtons(QuerySnapshot snapshot) {
+        Map<Integer, Integer> slotCount = new HashMap<>();
+
+        for (DocumentSnapshot doc : snapshot.getDocuments()) {
+            LichHen lh = doc.toObject(LichHen.class);
+
+            int hour = lh.getThoiGianHen()
+                    .toDate()
+                    .getHours();
+
+            slotCount.put(hour,
+                    slotCount.getOrDefault(hour, 0) + 1);
+        }
+
+        for (MaterialButton btn : timeButtons) {
+            int hour = Integer.parseInt(
+                    btn.getText().toString().split(":")[0]
+            );
+
+            int count = slotCount.getOrDefault(hour, 0);
+
+            btn.setEnabled(count < MAX_SLOT);
+        }
     }
 
     private void loadDataForSpinners() {
@@ -215,7 +315,6 @@ public class AddLichHenActivity extends AppCompatActivity {
                 R.id.btnTime19
         };
 
-        List<MaterialButton> timeButtons = new ArrayList<>();
 
         for (int id : timeButtonIds) {
             MaterialButton btn = findViewById(id);
@@ -270,7 +369,7 @@ public class AddLichHenActivity extends AppCompatActivity {
         String lichHenId =
                 db.collection("LichHen").document().getId();
 
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = (Calendar) selectedDate.clone();
 
         try {
             String[] timeParts =

@@ -181,6 +181,24 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
+
+                    <TextView
+                        android:id="@+id/tvSelectedDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Chọn ngày"
+                        android:padding="12dp"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSelectDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Chọn ngày"
+                        android:textAllCaps="false"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:backgroundTint="#4E84FB"
+                        app:cornerRadius="8dp"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ghi chú" android:textColor="#333333" android:textSize="13sp" android:textStyle="bold" />
                     <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="45dp" android:layout_marginTop="8dp" android:layout_marginBottom="16dp" app:boxCornerRadiusBottomEnd="8dp" app:boxCornerRadiusBottomStart="8dp" app:boxCornerRadiusTopEnd="8dp" app:boxCornerRadiusTopStart="8dp" app:boxStrokeColor="#E0E0E0" app:hintEnabled="false">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/edtNotes" android:layout_width="match_parent" android:layout_height="match_parent" android:padding="0dp" android:paddingHorizontal="12dp" android:inputType="text" android:textSize="13sp" />

@@ -3,6 +3,7 @@ package com.example.petcareapp.ui.admin.lichhen;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -54,6 +55,14 @@ public class AdminLichHenActivity extends AppCompatActivity {
 
         loadBranches();
         loadAppointments();
+    }
+    private void collapseFilter(String status, String branch) {
+
+        findViewById(R.id.filterContainer).setVisibility(View.GONE);
+        findViewById(R.id.tvFilterSummary).setVisibility(View.VISIBLE);
+
+        TextView tv = findViewById(R.id.tvFilterSummary);
+        tv.setText("Đang lọc: " + status + " • " + branch);
     }
 
     private void initView() {
@@ -185,7 +194,20 @@ public class AdminLichHenActivity extends AppCompatActivity {
     private void setupEvent() {
         btnPickDate.setOnClickListener(v -> showDatePicker());
 
-        btnFilter.setOnClickListener(v -> loadAppointments());
+        btnFilter.setOnClickListener(v -> {
+
+            loadAppointments();
+
+            String status = spStatus.getSelectedItem().toString();
+            String branch = spBranch.getSelectedItem().toString();
+
+            collapseFilter(status, branch);
+        });
+
+        findViewById(R.id.tvFilterSummary).setOnClickListener(v -> {
+            findViewById(R.id.filterContainer).setVisibility(View.VISIBLE);
+            findViewById(R.id.tvFilterSummary).setVisibility(View.GONE);
+        });
     }
 
     private void showDatePicker() {
@@ -262,4 +284,5 @@ public class AdminLichHenActivity extends AppCompatActivity {
             );
         });
     }
+
 }

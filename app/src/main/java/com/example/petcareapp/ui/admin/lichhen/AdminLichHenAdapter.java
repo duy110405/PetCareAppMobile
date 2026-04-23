@@ -108,17 +108,45 @@ public class AdminLichHenAdapter
         FirebaseFirestore.getInstance()
                 .collection("LichHen")
                 .document(item.getId())
-                .update("trangThai", "Đã xác nhận")
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(
-                            context,
-                            "Đã duyệt lịch hẹn",
-                            Toast.LENGTH_SHORT
-                    ).show();
+                .get()
+                .addOnSuccessListener(snapshot -> {
 
-                    if (listener != null) {
-                        listener.onStatusChanged();
+                    if (!snapshot.exists()) {
+                        Toast.makeText(
+                                context,
+                                "Lịch hẹn không tồn tại",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        return;
                     }
+
+                    String currentStatus = snapshot.getString("trangThai");
+
+                    // CHECK XUNG ĐỘT
+                    if (!"Chờ duyệt".equals(currentStatus)) {
+                        Toast.makeText(
+                                context,
+                                "Khách hàng đã hủy lịch hẹn này",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        notifyDataSetChanged();
+                        return;
+                    }
+
+                    // UPDATE NẾU HỢP LỆ
+                    snapshot.getReference()
+                            .update("trangThai", "Đã xác nhận")
+                            .addOnSuccessListener(unused -> {
+                                Toast.makeText(
+                                        context,
+                                        "Đã duyệt lịch hẹn",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                                item.setTrangThai("Đã xác nhận");
+                                notifyDataSetChanged();
+                            });
                 });
     }
 

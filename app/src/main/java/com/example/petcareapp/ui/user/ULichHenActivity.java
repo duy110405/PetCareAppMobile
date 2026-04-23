@@ -29,6 +29,12 @@ public class ULichHenActivity extends AppCompatActivity {
     private TextView tvTotalCount;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        loadData();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_lich_hen);
@@ -88,7 +94,16 @@ public class ULichHenActivity extends AppCompatActivity {
 
                     if (value == null) return;
 
-                    List<LichHen> all = value.toObjects(LichHen.class);
+                    List<LichHen> all = new ArrayList<>();
+
+                    for (var doc : value.getDocuments()) {
+                        LichHen lh = doc.toObject(LichHen.class);
+
+                        if (lh != null) {
+                            lh.setId(doc.getId());
+                            all.add(lh);
+                        }
+                    }
 
                     List<LichHen> upcoming = new ArrayList<>();
                     List<LichHen> history = new ArrayList<>();

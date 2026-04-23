@@ -28,6 +28,7 @@ public class DangNhapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dangnhap);
 
+
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
@@ -35,7 +36,7 @@ public class DangNhapActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance(); // Khởi tạo Database
-
+        mAuth.signOut();
         tvRegister.setOnClickListener(v -> startActivity(new Intent(this, DangKyActivity.class)));
         btnLogin.setOnClickListener(v -> loginUser());
 
@@ -79,10 +80,10 @@ public class DangNhapActivity extends AppCompatActivity {
 
                         if ("admin".equals(role)) {
                             // Là Admin Vào trang Quản lý
-                            startActivity(new Intent(this, AChiNhanhActivity.class)); // Đổi thành trang ALichHenActivity nếu muốn
+                            startActivity(new Intent(this, AdminLichHenActivity.class)); // Đổi thành trang ALichHenActivity nếu muốn
                         } else {
                             // Là User Vào trang Chủ
-                            startActivity(new Intent(this, AdminLichHenActivity.class));
+                            startActivity(new Intent(this, UTrangChuActivity.class));
                         }
                         finish();
                     } else {
