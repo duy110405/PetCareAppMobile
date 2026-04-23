@@ -2,7 +2,9 @@ package com.example.petcareapp.ui.user;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +30,10 @@ public class ULichHenActivity extends AppCompatActivity {
     private LichHenAdapter upcomingAdapter, historyAdapter;
     private TextView tvTotalCount;
 
+    // 1. KHAI BÁO THÊM CÁC BIẾN CHO GIAO DIỆN
+    private RecyclerView rvUpcoming, rvHistory;
+    private LinearLayout layoutEmptyUpcoming, layoutEmptyHistory;
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -39,7 +45,7 @@ public class ULichHenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_lich_hen);
 
-        // ===== UI =====
+        // ===== ÁNH XẠ UI CƠ BẢN =====
         tvTotalCount = findViewById(R.id.tvPetCount);
         MaterialButton btnAdd = findViewById(R.id.btnAddAppointment);
         ImageView btnBack = findViewById(R.id.btnBack);
@@ -47,9 +53,11 @@ public class ULichHenActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
         MenuUser.setup(this, bottomNav);
 
-        // ===== RecyclerViews =====
-        RecyclerView rvUpcoming = findViewById(R.id.rvUpcomingAppointments);
-        RecyclerView rvHistory = findViewById(R.id.rvHistoryAppointments);
+        // ===== 2. ÁNH XẠ RECYCLERVIEW VÀ EMPTY LAYOUT =====
+        rvUpcoming = findViewById(R.id.rvUpcomingAppointments);
+        rvHistory = findViewById(R.id.rvHistoryAppointments);
+        layoutEmptyUpcoming = findViewById(R.id.layoutEmptyUpcoming);
+        layoutEmptyHistory = findViewById(R.id.layoutEmptyHistory);
 
         upcomingAdapter = new LichHenAdapter();
         historyAdapter = new LichHenAdapter();
@@ -110,30 +118,44 @@ public class ULichHenActivity extends AppCompatActivity {
 
                     // ===== PHÂN LOẠI LỊCH HẸN =====
                     for (LichHen lh : all) {
-
                         String status = lh.getTrangThai();
-
-                        if (status == null) {
-                            status = "";
-                        }
+                        if (status == null) status = "";
 
                         // Lịch đã kết thúc → history
-                        if (status.equals("Hoàn thành")
-                                || status.equals("Đã hủy")) {
-
+                        if (status.equals("Hoàn thành") || status.equals("Đã hủy")) {
                             history.add(lh);
-
                         } else {
                             // Chờ duyệt / xác nhận / đang khám → upcoming
                             upcoming.add(lh);
                         }
                     }
 
-                    // ===== UPDATE UI =====
+                    // ===== UPDATE DỮ LIỆU =====
                     upcomingAdapter.setData(upcoming);
                     historyAdapter.setData(history);
-
                     tvTotalCount.setText(String.valueOf(upcoming.size()));
+
+                    // ===== 3. XỬ LÝ LOGIC HIỂN THỊ EMPTY STATE =====
+
+                    // Xử lý mảng Sắp tới (Upcoming)
+                    if (upcoming.isEmpty()) {
+                        // Nếu danh sách trống -> Hiện layout báo trống, ẩn danh sách đi
+                        layoutEmptyUpcoming.setVisibility(View.VISIBLE);
+                        rvUpcoming.setVisibility(View.GONE);
+                    } else {
+                        // Nếu có dữ liệu -> Ẩn layout báo trống, hiện danh sách
+                        layoutEmptyUpcoming.setVisibility(View.GONE);
+                        rvUpcoming.setVisibility(View.VISIBLE);
+                    }
+
+                    // Xử lý mảng Lịch sử (History)
+                    if (history.isEmpty()) {
+                        layoutEmptyHistory.setVisibility(View.VISIBLE);
+                        rvHistory.setVisibility(View.GONE);
+                    } else {
+                        layoutEmptyHistory.setVisibility(View.GONE);
+                        rvHistory.setVisibility(View.VISIBLE);
+                    }
                 });
     }
 }

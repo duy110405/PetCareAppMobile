@@ -136,6 +136,12 @@ public class LichHenAdapter extends RecyclerView.Adapter<LichHenAdapter.ViewHold
         holder.btnCancelAppointment.setVisibility(
                 canCancel ? View.VISIBLE : View.GONE
         );
+        // ===== CLICK XEM CHI TIẾT =====
+        holder.itemView.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(v.getContext(), ChiTietLichHenActivity.class);
+            intent.putExtra("lichHenId", item.getId());
+            v.getContext().startActivity(intent);
+        });
 
         // ===== XỬ LÝ HỦY LỊCH =====
         holder.btnCancelAppointment.setOnClickListener(v -> {

@@ -2,6 +2,7 @@ package com.example.petcareapp.ui.admin.lichhen;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,8 @@ public class AdminChiTietLichHenActivity extends AppCompatActivity {
 
     private TextView txtPetName;
     private TextView txtTime;
+    private TextView txtOwnerName;
+    private TextView txtPhone;
     private TextView txtBranch;
     private TextView txtStatus;
     private TextView txtNote;
@@ -31,6 +34,9 @@ public class AdminChiTietLichHenActivity extends AppCompatActivity {
 
     private String lichHenId;
     private TextView txtRejectReason;
+    private ImageView btnBack;
+    private TextView txtServices;
+    private TextView txtTotalPrice;
     private final SimpleDateFormat sdf =
             new SimpleDateFormat("HH:mm - dd/MM/yyyy", Locale.getDefault());
 
@@ -55,6 +61,8 @@ public class AdminChiTietLichHenActivity extends AppCompatActivity {
 
     private void initViews() {
         txtPetName = findViewById(R.id.txtPetName);
+        txtOwnerName = findViewById(R.id.txtOwnerName);
+        txtPhone = findViewById(R.id.txtPhone);
         txtTime = findViewById(R.id.txtTime);
         txtBranch = findViewById(R.id.txtBranch);
         txtStatus = findViewById(R.id.txtStatus);
@@ -63,6 +71,12 @@ public class AdminChiTietLichHenActivity extends AppCompatActivity {
         btnApprove = findViewById(R.id.btnApprove);
         btnReject = findViewById(R.id.btnReject);
         txtRejectReason = findViewById(R.id.txtRejectReason);
+        btnBack = findViewById(R.id.btnBack);
+        txtServices = findViewById(R.id.txtServices);
+        txtTotalPrice = findViewById(R.id.txtTotalPrice);
+
+        // Xử lý nút Back
+        btnBack.setOnClickListener(v -> finish());
     }
 
     private void loadDetail() {
@@ -71,22 +85,51 @@ public class AdminChiTietLichHenActivity extends AppCompatActivity {
                 .document(lichHenId)
                 .get()
                 .addOnSuccessListener(snapshot -> {
-
                     if (!snapshot.exists()) return;
-
                     LichHen item = snapshot.toObject(LichHen.class);
-
                     if (item == null) return;
-
                     item.setId(snapshot.getId());
-
                     txtPetName.setText(item.getTenThuCung());
+                    if(item.getTenChuThuCung() != null) {
+                        txtOwnerName.setText("Khách hàng: " + item.getTenChuThuCung());
+                    }
+                    if(item.getSoDienThoai() != null) {
+                        txtPhone.setText("SĐT: " + item.getSoDienThoai());
+                    }
 
                     if (item.getThoiGianHen() != null) {
                         txtTime.setText(
                                 sdf.format(item.getThoiGianHen().toDate())
                         );
                     }
+                    StringBuilder dvBuilder = new StringBuilder();
+                    if (item.getDanhSachDichVu() != null && !item.getDanhSachDichVu().isEmpty()) {
+                        for (com.example.petcareapp.data.model.DichVu dv : item.getDanhSachDichVu()) {
+                            dvBuilder.append(dv.getTen()).append(", ");
+                        }
+                        dvBuilder.setLength(dvBuilder.length() - 2);
+                        txtServices.setText(dvBuilder.toString());
+                    } else {
+                        txtServices.setText("Không có dịch vụ đi kèm");
+                    }
+
+                    // Gán tổng tiền
+                    txtTotalPrice.setText(String.format("%,d đ", item.getTongTien()));
+
+                    // Đổi màu nền của Status tùy theo trạng thái (Tính năng UX nâng cao)
+                    String status = item.getTrangThai();
+                    txtStatus.setText(status);
+                    if ("Chờ duyệt".equals(status)) {
+                        txtStatus.setTextColor(android.graphics.Color.parseColor("#F57C00"));
+                        txtStatus.setBackgroundColor(android.graphics.Color.parseColor("#FFF3E0"));
+                    } else if ("Đã xác nhận".equals(status)) {
+                        txtStatus.setTextColor(android.graphics.Color.parseColor("#388E3C"));
+                        txtStatus.setBackgroundColor(android.graphics.Color.parseColor("#E8F5E9"));
+                    } else if ("Đã hủy".equals(status)) {
+                        txtStatus.setTextColor(android.graphics.Color.parseColor("#D32F2F"));
+                        txtStatus.setBackgroundColor(android.graphics.Color.parseColor("#FFEBEE"));
+                    }
+
 
                     txtBranch.setText(item.getTenChiNhanh());
                     txtStatus.setText(item.getTrangThai());
@@ -105,6 +148,12 @@ public class AdminChiTietLichHenActivity extends AppCompatActivity {
                         btnApprove.setVisibility(TextView.GONE);
                         btnReject.setVisibility(TextView.GONE);
                     }
+
+                    txtPhone.setOnClickListener(v -> {
+                        android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_DIAL);
+                        intent.setData(android.net.Uri.parse("tel:" + item.getSoDienThoai()));
+                        startActivity(intent);
+                    });
                 });
     }
 

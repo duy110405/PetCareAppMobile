@@ -5,9 +5,10 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,9 +27,9 @@ import java.util.List;
 
 public class AdminLichHenActivity extends AppCompatActivity {
 
-    private Spinner spStatus, spBranch;
+    private AutoCompleteTextView spStatus, spBranch;
     private Button btnPickDate, btnFilter;
-    private TextView tvEmpty;
+    private View tvEmpty;
     private TextView tvCount;
     private RecyclerView recyclerView;
     private AdminLichHenAdapter adapter;
@@ -36,7 +37,7 @@ public class AdminLichHenActivity extends AppCompatActivity {
     private final List<LichHen> list = new ArrayList<>();
     private final List<String> branchNames = new ArrayList<>();
 
-    private Date selectedDate = new Date();
+    private Date selectedDate = null;
 
     private TextView tvPendingCount;
     private TextView tvApprovedCount;
@@ -56,8 +57,8 @@ public class AdminLichHenActivity extends AppCompatActivity {
         loadBranches();
         loadAppointments();
     }
-    private void collapseFilter(String status, String branch) {
 
+    private void collapseFilter(String status, String branch) {
         findViewById(R.id.filterContainer).setVisibility(View.GONE);
         findViewById(R.id.tvFilterSummary).setVisibility(View.VISIBLE);
 
@@ -81,6 +82,7 @@ public class AdminLichHenActivity extends AppCompatActivity {
         tvCancelledCount = findViewById(R.id.tvCancelledCount);
         tvTotalCount = findViewById(R.id.tvTotalCount);
     }
+
     private void updateDashboard() {
         int pending = 0;
         int approved = 0;
@@ -103,13 +105,14 @@ public class AdminLichHenActivity extends AppCompatActivity {
         tvCancelledCount.setText(cancelled + "\nHủy");
         tvTotalCount.setText(list.size() + "\nTổng");
     }
+
     private void updateCountText() {
         int count = list.size();
 
-        String status = "Tất cả";
-
-        if (spStatus.getSelectedItem() != null) {
-            status = spStatus.getSelectedItem().toString();
+        // SỬA LỖI Ở ĐÂY: Dùng getText() thay vì getSelectedItem()
+        String status = spStatus.getText().toString().trim();
+        if (status.isEmpty()) {
+            status = "Tất cả";
         }
 
         if ("Tất cả".equals(status)) {
@@ -147,6 +150,7 @@ public class AdminLichHenActivity extends AppCompatActivity {
                 );
 
         spStatus.setAdapter(statusAdapter);
+        spStatus.setText("Tất cả", false); // Set giá trị mặc định tránh bị trống
     }
 
     private void loadBranches() {
@@ -174,6 +178,7 @@ public class AdminLichHenActivity extends AppCompatActivity {
                             );
 
                     spBranch.setAdapter(branchAdapter);
+                    spBranch.setText("Tất cả", false); // Set giá trị mặc định
                 });
     }
 
@@ -198,8 +203,12 @@ public class AdminLichHenActivity extends AppCompatActivity {
 
             loadAppointments();
 
-            String status = spStatus.getSelectedItem().toString();
-            String branch = spBranch.getSelectedItem().toString();
+            // SỬA LỖI Ở ĐÂY: Dùng getText()
+            String status = spStatus.getText().toString().trim();
+            if(status.isEmpty()) status = "Tất cả";
+
+            String branch = spBranch.getText().toString().trim();
+            if(branch.isEmpty()) branch = "Tất cả";
 
             collapseFilter(status, branch);
         });
@@ -213,66 +222,82 @@ public class AdminLichHenActivity extends AppCompatActivity {
     private void showDatePicker() {
         Calendar cal = Calendar.getInstance();
 
-        new DatePickerDialog(
+        // Nếu trước đó đã chọn ngày thì mở đúng ngày đó, nếu chưa thì mở ngày hiện tại
+        if (selectedDate != null) {
+            cal.setTime(selectedDate);
+        }
+
+        DatePickerDialog dialog = new DatePickerDialog(
                 this,
                 (view, year, month, dayOfMonth) -> {
                     cal.set(year, month, dayOfMonth);
                     selectedDate = cal.getTime();
+                    btnPickDate.setText(String.format("Ngày: %02d/%02d/%d", dayOfMonth, month + 1, year));
                 },
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
                 cal.get(Calendar.DAY_OF_MONTH)
-        ).show();
+        );
+
+        // THÊM NÚT ĐỂ XÓA BỘ LỌC NGÀY
+        dialog.setButton(DatePickerDialog.BUTTON_NEUTRAL, "Tất cả", (d, which) -> {
+            selectedDate = null;
+            btnPickDate.setText("Ngày: Tất cả");
+        });
+
+        dialog.show();
     }
 
     private void loadAppointments() {
-
+        // Khởi tạo Query cơ bản (Lấy tất cả, sắp xếp mới nhất lên đầu)
         Query query = FirebaseFirestore.getInstance()
                 .collection("LichHen")
                 .orderBy("thoiGianHen", Query.Direction.DESCENDING);
 
-        String status = "Tất cả";
-        String branch = "Tất cả";
+        // 1. NẾU CÓ CHỌN NGÀY THÌ MỚI THÊM ĐIỀU KIỆN LỌC THEO NGÀY
+        if (selectedDate != null) {
+            Calendar startCal = Calendar.getInstance();
+            startCal.setTime(selectedDate);
+            startCal.set(Calendar.HOUR_OF_DAY, 0);
+            startCal.set(Calendar.MINUTE, 0);
+            startCal.set(Calendar.SECOND, 0);
+            Date startOfDay = startCal.getTime();
 
-        if (spStatus.getSelectedItem() != null) {
-            status = spStatus.getSelectedItem().toString();
+            Calendar endCal = Calendar.getInstance();
+            endCal.setTime(selectedDate);
+            endCal.set(Calendar.HOUR_OF_DAY, 23);
+            endCal.set(Calendar.MINUTE, 59);
+            endCal.set(Calendar.SECOND, 59);
+            Date endOfDay = endCal.getTime();
+
+            query = query.whereGreaterThanOrEqualTo("thoiGianHen", startOfDay)
+                    .whereLessThanOrEqualTo("thoiGianHen", endOfDay);
         }
 
-        if (spBranch.getSelectedItem() != null) {
-            branch = spBranch.getSelectedItem().toString();
-        }
+        // 2. LỌC THEO TRẠNG THÁI VÀ CHI NHÁNH
+        String status = spStatus.getText().toString().trim();
+        if (status.isEmpty()) status = "Tất cả";
+
+        String branch = spBranch.getText().toString().trim();
+        if (branch.isEmpty()) branch = "Tất cả";
 
         if (!status.equals("Tất cả")) {
             query = query.whereEqualTo("trangThai", status);
         }
-
         if (!branch.equals("Tất cả")) {
             query = query.whereEqualTo("tenChiNhanh", branch);
         }
 
+        // 3. Thực thi Query (Phần này và phía dưới bạn giữ nguyên code cũ)
         query.get().addOnSuccessListener(snapshot -> {
-
             list.clear();
-            Calendar selectedCal = Calendar.getInstance();
-            selectedCal.setTime(selectedDate);
 
             for (var doc : snapshot.getDocuments()) {
                 LichHen item = doc.toObject(LichHen.class);
+                if (item == null) continue;
 
-                if (item == null || item.getThoiGianHen() == null) continue;
-
-                Calendar itemCal = Calendar.getInstance();
-                itemCal.setTime(item.getThoiGianHen().toDate());
-
-                boolean sameDate =
-                        itemCal.get(Calendar.YEAR) == selectedCal.get(Calendar.YEAR)
-                                && itemCal.get(Calendar.MONTH) == selectedCal.get(Calendar.MONTH)
-                                && itemCal.get(Calendar.DAY_OF_MONTH) == selectedCal.get(Calendar.DAY_OF_MONTH);
-
-                if (sameDate) {
-                    item.setId(doc.getId());
-                    list.add(item);
-                }
+                item.setId(doc.getId());
+                list.add(item);
             }
 
             adapter.updateList(list);
@@ -282,7 +307,9 @@ public class AdminLichHenActivity extends AppCompatActivity {
             tvEmpty.setVisibility(
                     list.isEmpty() ? TextView.VISIBLE : TextView.GONE
             );
+        }).addOnFailureListener(e -> {
+            // Hiển thị lỗi nếu thiếu Index
+            Toast.makeText(this, "Lỗi tải dữ liệu. Cần tạo Index Firebase!", Toast.LENGTH_LONG).show();
         });
     }
-
 }

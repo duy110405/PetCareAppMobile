@@ -21,6 +21,24 @@ public class LichHen {
     private String tenThuCung;
     private String tenChiNhanh;
 
+    public String getTenChuThuCung() {
+        return tenChuThuCung;
+    }
+
+    public void setTenChuThuCung(String tenChuThuCung) {
+        this.tenChuThuCung = tenChuThuCung;
+    }
+
+    public String getSoDienThoai() {
+        return soDienThoai;
+    }
+
+    public void setSoDienThoai(String soDienThoai) {
+        this.soDienThoai = soDienThoai;
+    }
+
+    private String tenChuThuCung;
+    private String soDienThoai;
     public LichHen() {
     }
 

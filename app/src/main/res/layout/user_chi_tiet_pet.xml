@@ -356,6 +356,7 @@
             </RelativeLayout>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvPetAppointment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
@@ -373,15 +374,15 @@
 
                     <com.google.android.material.card.MaterialCardView android:id="@+id/imgPetAppt" android:layout_width="50dp" android:layout_height="50dp" app:cardBackgroundColor="#E0E0E0" app:cardCornerRadius="25dp" app:cardElevation="0dp" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView android:id="@+id/tvApptName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="Max" android:textColor="#000000" android:textSize="16sp" android:textStyle="bold" app:layout_constraintStart_toEndOf="@id/imgPetAppt" app:layout_constraintTop_toTopOf="parent" />
+                    <TextView android:id="@+id/tvApptName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="Tên thú cưng" android:textColor="#000000" android:textSize="16sp" android:textStyle="bold" app:layout_constraintStart_toEndOf="@id/imgPetAppt" app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.google.android.material.card.MaterialCardView android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardBackgroundColor="#4CAF50" app:cardCornerRadius="4dp" app:cardElevation="0dp" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingHorizontal="8dp" android:paddingVertical="4dp" android:text="Chờ duyệt" android:textColor="@android:color/white" android:textSize="10sp" android:textStyle="bold"/>
+                    <com.google.android.material.card.MaterialCardView android:id="@+id/cvApptStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" app:cardBackgroundColor="#4CAF50" app:cardCornerRadius="4dp" app:cardElevation="0dp" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent">
+                        <TextView android:id="@+id/tvApptStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingHorizontal="8dp" android:paddingVertical="4dp" android:text="Trạng thái" android:textColor="@android:color/white" android:textSize="10sp" android:textStyle="bold"/>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <TextView android:id="@+id/tvApptDesc" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Khám sức khỏe tổng quát" android:textColor="#333333" android:textSize="13sp" app:layout_constraintStart_toStartOf="@id/tvApptName" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toBottomOf="@id/tvApptName" />
+                    <TextView android:id="@+id/tvApptDesc" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Dịch vụ..." android:textColor="#333333" android:textSize="13sp" app:layout_constraintStart_toStartOf="@id/tvApptName" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toBottomOf="@id/tvApptName" />
 
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="10:00 , 15 thg 5" android:textColor="#757575" android:textSize="12sp" app:layout_constraintStart_toStartOf="@id/tvApptName" app:layout_constraintTop_toBottomOf="@id/tvApptDesc" />
+                    <TextView android:id="@+id/tvApptTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Thời gian" android:textColor="#757575" android:textSize="12sp" app:layout_constraintStart_toStartOf="@id/tvApptName" app:layout_constraintTop_toBottomOf="@id/tvApptDesc" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 

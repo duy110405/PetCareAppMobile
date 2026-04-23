@@ -51,10 +51,15 @@
         <activity android:name=".ui.user.Pet.PetDetailActivity"/>
         <activity android:name=".ui.user.Pet.ThemChuongBaoActivity"/>
         <activity android:name=".ui.user.TrangChu.UTrangChuActivity" />
-        <activity android:name=".ui.user.UCaiDatActivity" />
+
         <activity android:name=".ui.user.LichHen.AddLichHenActivity"/>
         <activity android:name=".ui.user.ULichHenActivity" />
-
+        <activity
+            android:name=".ui.user.UCaiDatActivity"
+            android:configChanges="uiMode"
+            android:exported="false" />
+        <activity android:name=".ui.user.LichHen.ChiTietLichHenActivity" />
+        <activity android:name=".ui.user.Pet.PetLichSuHenActivity" android:exported="false" />
         <activity
             android:name=".ui.auth.DangNhapActivity"
             android:exported="true">
@@ -63,6 +68,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
 
 
 

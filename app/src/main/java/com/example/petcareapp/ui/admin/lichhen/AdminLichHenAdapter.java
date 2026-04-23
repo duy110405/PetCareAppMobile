@@ -68,6 +68,15 @@ public class AdminLichHenAdapter
         LichHen item = list.get(position);
 
         holder.txtName.setText(item.getTenThuCung());
+        if(item.getTenChuThuCung() != null) {
+            holder.txtOwnerName.setText(item.getTenChuThuCung());
+        } else {
+            holder.txtOwnerName.setText("Khách ẩn danh");
+        }
+
+        if(item.getSoDienThoai() != null) {
+            holder.txtPhone.setText(item.getSoDienThoai());
+        }
 
         if (item.getThoiGianHen() != null) {
             holder.txtTime.setText(
@@ -188,12 +197,16 @@ public class AdminLichHenAdapter
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView txtName, txtTime, txtBranch, txtStatus;
+        TextView txtOwnerName, txtPhone;
+
         MaterialButton btnApprove, btnReject;
 
         public ViewHolder(@NonNull View v) {
             super(v);
 
             txtName = v.findViewById(R.id.txtName);
+            txtOwnerName = v.findViewById(R.id.txtOwnerName);
+            txtPhone = v.findViewById(R.id.txtPhone);
             txtTime = v.findViewById(R.id.txtTime);
             txtBranch = v.findViewById(R.id.txtBranch);
             txtStatus = v.findViewById(R.id.txtStatus);
