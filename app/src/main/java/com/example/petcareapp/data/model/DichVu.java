@@ -1,29 +1,52 @@
 package com.example.petcareapp.data.model;
 
 public class DichVu {
-    private String ten;
-    private int gia;
 
-    public DichVu() {}
+    private String id;
+    private String tenDichVu;
+    private String moTa;
+    private double gia;
 
-    public DichVu(String ten, int gia) {
-        this.ten = ten;
+    public DichVu() {
+        // required for Firebase
+    }
+
+    public DichVu(String id, String tenDichVu, String moTa, double gia) {
+        this.id = id;
+        this.tenDichVu = tenDichVu;
+        this.moTa = moTa;
         this.gia = gia;
     }
 
-    public String getTen() {
-        return ten;
+    public String getId() {
+        return id;
     }
 
-    public void setTen(String ten) {
-        this.ten = ten;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public int getGia() {
+    public String getTenDichVu() {
+        return tenDichVu;
+    }
+
+    public void setTenDichVu(String tenDichVu) {
+        this.tenDichVu = tenDichVu;
+    }
+
+    public String getMoTa() {
+        return moTa;
+    }
+
+    public void setMoTa(String moTa) {
+        this.moTa = moTa;
+    }
+
+    public double getGia() {
         return gia;
     }
 
-    public void setGia(int gia) {
+    public void setGia(double gia) {
         this.gia = gia;
     }
 }
