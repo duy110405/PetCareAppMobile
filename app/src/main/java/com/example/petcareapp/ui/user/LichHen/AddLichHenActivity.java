@@ -1,85 +1,197 @@
 package com.example.petcareapp.ui.user.LichHen;
 
+import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petcareapp.R;
 import com.example.petcareapp.data.model.ChiNhanh;
+import com.example.petcareapp.data.model.DichVu;
 import com.example.petcareapp.data.model.LichHen;
 import com.example.petcareapp.data.model.Pet;
 import com.example.petcareapp.ui.user.Pet.PetViewModel;
+import com.example.petcareapp.ui.user.TimPhong.UChiNhanhViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.example.petcareapp.ui.user.TimPhong.UChiNhanhViewModel;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddLichHenActivity extends AppCompatActivity {
 
     private AutoCompleteTextView spinnerPet, spinnerBranch;
-    private MaterialCardView cardDichVu1, cardDichVu2, cardDichVu3;
+    private RecyclerView rcvServices, rcvTimeSlots;
     private TextView tvTotalPrice;
-    private TextInputEditText edtNotes;
+    private TextInputEditText edtNotes, edtSelectDate;
     private MaterialButton btnCancel, btnAddAppointmentSubmit;
     private ImageView btnBack;
 
     private List<Pet> petList = new ArrayList<>();
     private List<ChiNhanh> branchList = new ArrayList<>();
 
-    // Biến lưu trữ lựa chọn của người dùng
     private Pet selectedPet = null;
     private ChiNhanh selectedBranch = null;
-    private String selectedService = "";
+
+    private final List<DichVu> allServices = new ArrayList<>();
+    private final List<DichVu> selectedServices = new ArrayList<>();
+
     private int totalPrice = 0;
     private String selectedTime = "";
+    private Calendar selectedDate = Calendar.getInstance();
+
+    private ServiceAdapter serviceAdapter;
+    private TimeSlotAdapter timeSlotAdapter;
+
+    private static final int MAX_SLOT = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_them_lich_hen);
 
-        // 1. Ánh xạ View
-        spinnerPet = findViewById(R.id.spinnerPet);
-        spinnerBranch = findViewById(R.id.spinnerBranch);
-        tvTotalPrice = findViewById(R.id.tvTotalPrice);
-        edtNotes = findViewById(R.id.edtNotes);
-        btnCancel = findViewById(R.id.btnCancel);
-        btnAddAppointmentSubmit = findViewById(R.id.btnAddAppointmentSubmit);
-        btnBack = findViewById(R.id.btnBack);
-
-        cardDichVu1 = findViewById(R.id.cardDichVu1);
-        cardDichVu2 = findViewById(R.id.cardDichVu2);
-        cardDichVu3 = findViewById(R.id.cardDichVu3);
-
-        // 2. Setup sự kiện
-        btnBack.setOnClickListener(v -> finish());
-        btnCancel.setOnClickListener(v -> finish());
-        btnAddAppointmentSubmit.setOnClickListener(v -> thucHienDatLich());
-
+        initViews();
+        setupEvents();
         setupDichVu();
         setupGioHen();
         loadDataForSpinners();
     }
 
+    private void initViews() {
+        spinnerPet = findViewById(R.id.spinnerPet);
+        spinnerBranch = findViewById(R.id.spinnerBranch);
+        rcvServices = findViewById(R.id.rcvServices);
+        rcvTimeSlots = findViewById(R.id.rcvTimeSlots);
+        tvTotalPrice = findViewById(R.id.tvTotalPrice);
+        edtNotes = findViewById(R.id.edtNotes);
+        edtSelectDate = findViewById(R.id.edtSelectDate);
+        btnCancel = findViewById(R.id.btnCancel);
+        btnAddAppointmentSubmit = findViewById(R.id.btnAddAppointmentSubmit);
+        btnBack = findViewById(R.id.btnBack);
+    }
+
+    private void setupEvents() {
+        btnBack.setOnClickListener(v -> finish());
+        btnCancel.setOnClickListener(v -> finish());
+
+        // Mở DatePicker khi nhấn vào Text Input
+        edtSelectDate.setOnClickListener(v -> showDatePicker());
+
+        btnAddAppointmentSubmit.setOnClickListener(v -> thucHienDatLich());
+    }
+
+    private void showDatePicker() {
+        if (selectedBranch == null) {
+            Toast.makeText(this, "Vui lòng chọn chi nhánh trước", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Calendar now = Calendar.getInstance();
+        DatePickerDialog dialog = new DatePickerDialog(
+                this,
+                (view, year, month, dayOfMonth) -> {
+                    selectedDate.set(year, month, dayOfMonth);
+                    String text = String.format("%02d/%02d/%d", dayOfMonth, (month + 1), year);
+                    edtSelectDate.setText(text);
+
+                    // Reset selected time
+                    selectedTime = "";
+                    loadAvailableTimeSlots();
+                },
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH)
+        );
+
+        dialog.getDatePicker().setMinDate(System.currentTimeMillis());
+        dialog.show();
+    }
+
+    private void setupDichVu() {
+        allServices.add(new DichVu("Khám tổng quát (khám sức khỏe định kỳ)", 200000));
+        allServices.add(new DichVu("Tiêm phòng (phòng dại, truyền nhiễm)", 500000));
+        allServices.add(new DichVu("Spa (tắm, cắt tỉa lông, làm đẹp)", 200000));
+
+        rcvServices.setLayoutManager(new LinearLayoutManager(this));
+        serviceAdapter = new ServiceAdapter();
+        rcvServices.setAdapter(serviceAdapter);
+    }
+
+    private void setupGioHen() {
+        List<String> times = new ArrayList<>();
+        for (int i = 8; i <= 19; i++) {
+            times.add(i + ":00");
+        }
+
+        rcvTimeSlots.setLayoutManager(new GridLayoutManager(this, 4)); // 4 cột
+        timeSlotAdapter = new TimeSlotAdapter(times);
+        rcvTimeSlots.setAdapter(timeSlotAdapter);
+    }
+
+    private void loadAvailableTimeSlots() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Calendar start = (Calendar) selectedDate.clone();
+        start.set(Calendar.HOUR_OF_DAY, 0);
+        start.set(Calendar.MINUTE, 0);
+
+        Calendar end = (Calendar) start.clone();
+        end.add(Calendar.DAY_OF_MONTH, 1);
+
+        db.collection("LichHen")
+                .whereEqualTo("chiNhanhId", selectedBranch.getId())
+                .whereGreaterThanOrEqualTo("thoiGianHen", new Timestamp(start.getTime()))
+                .whereLessThan("thoiGianHen", new Timestamp(end.getTime()))
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    Map<Integer, Integer> slotCount = new HashMap<>();
+                    for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                        LichHen lh = doc.toObject(LichHen.class);
+                        if (lh != null && !lh.getTrangThai().equals("Đã hủy")) {
+                            int hour = lh.getThoiGianHen().toDate().getHours();
+                            slotCount.put(hour, slotCount.getOrDefault(hour, 0) + 1);
+                        }
+                    }
+                    timeSlotAdapter.updateAvailability(slotCount);
+                });
+    }
+
+    private void calculateTotalPrice() {
+        totalPrice = 0;
+        for (DichVu dv : selectedServices) {
+            totalPrice += dv.getGia();
+        }
+        tvTotalPrice.setText(String.format("%,d đ", totalPrice));
+    }
+
     private void loadDataForSpinners() {
         String userId = FirebaseAuth.getInstance().getUid();
 
-        // Load Thú cưng
-        PetViewModel petViewModel = new ViewModelProvider(this).get(PetViewModel.class);
         if (userId != null) {
+            PetViewModel petViewModel = new ViewModelProvider(this).get(PetViewModel.class);
             petViewModel.loadPets(userId);
             petViewModel.getPets().observe(this, pets -> {
                 petList = pets;
@@ -92,120 +204,320 @@ public class AddLichHenActivity extends AppCompatActivity {
             });
         }
 
-        // Load Chi nhánh
-        // Sửa lại đoạn này trong AddLichHenActivity.java
         UChiNhanhViewModel branchViewModel = new ViewModelProvider(this).get(UChiNhanhViewModel.class);
-
-// Thay vì gọi loadChiNhanh() (không tồn tại), hãy gọi hàm bạn đã viết:
         branchViewModel.getDanhSachChiNhanh().observe(this, branches -> {
-            if (branches != null) {
-                this.branchList = branches;
-                List<String> names = new ArrayList<>();
-                for (ChiNhanh c : branches) {
-                    names.add(c.getTenChiNhanh());
-                }
+            if (branches == null) return;
+            branchList = branches;
+            List<String> names = new ArrayList<>();
+            for (ChiNhanh c : branches) names.add(c.getTenChiNhanh());
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                        android.R.layout.simple_dropdown_item_1line, names);
-                spinnerBranch.setAdapter(adapter);
-
-                spinnerBranch.setOnItemClickListener((parent, view, position, id) -> {
-                    selectedBranch = branchList.get(position);
-                });
-            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, names);
+            spinnerBranch.setAdapter(adapter);
+            spinnerBranch.setOnItemClickListener((parent, view, position, id) -> {
+                selectedBranch = branchList.get(position);
+                edtSelectDate.setText(""); // Xóa ngày cũ khi đổi chi nhánh
+                selectedTime = "";
+                timeSlotAdapter.resetSelection();
+            });
         });
     }
 
-    private void setupDichVu() {
-        // Logic chọn dịch vụ và cập nhật giá tiền
-        cardDichVu1.setOnClickListener(v -> selectService(cardDichVu1, "Khám tổng quát", 200000));
-        cardDichVu2.setOnClickListener(v -> selectService(cardDichVu2, "Tiêm phòng", 500000));
-        cardDichVu3.setOnClickListener(v -> selectService(cardDichVu3, "Spa", 200000));
+    private void thucHienDatLich() {
+        if (!isInputValid()) {
+            showToast("Vui lòng chọn đầy đủ thông tin!");
+            return;
+        }
+
+        String userId = FirebaseAuth.getInstance().getUid();
+
+        if (userId == null) {
+            showToast("Người dùng chưa đăng nhập");
+            return;
+        }
+
+        loadUserInfoAndCreateAppointment(userId);
     }
 
-    private void selectService(MaterialCardView selectedCard, String serviceName, int price) {
-        // Reset màu tất cả các thẻ
-        cardDichVu1.setStrokeColor(Color.parseColor("#E0E0E0"));
-        cardDichVu2.setStrokeColor(Color.parseColor("#E0E0E0"));
-        cardDichVu3.setStrokeColor(Color.parseColor("#E0E0E0"));
-
-        // Highlight thẻ được chọn
-        selectedCard.setStrokeColor(Color.parseColor("#2E64FE")); // Màu xanh dương
-        selectedCard.setStrokeWidth(3);
-
-        selectedService = serviceName;
-        totalPrice = price;
-        tvTotalPrice.setText("Giá : " + String.format("%,d đ", totalPrice));
+    private boolean isInputValid() {
+        return selectedPet != null
+                && selectedBranch != null
+                && !selectedServices.isEmpty()
+                && !selectedTime.isEmpty()
+                && edtSelectDate.getText() != null
+                && !edtSelectDate.getText().toString().trim().isEmpty();
     }
 
-    private void setupGioHen() {
-        // Gán mảng ID của các nút giờ (Bạn cần đảm bảo đã thêm ID này vào XML)
-        int[] timeButtonIds = {R.id.btnTime8, R.id.btnTime9, R.id.btnTime10, R.id.btnTime11,
-                R.id.btnTime12, R.id.btnTime13, R.id.btnTime14, R.id.btnTime15,
-                R.id.btnTime16, R.id.btnTime17, R.id.btnTime18, R.id.btnTime19};
+    private void loadUserInfoAndCreateAppointment(String userId) {
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(document -> {
+                    String tenChu = getUserName(document);
+                    String soDienThoai = getUserPhone(document);
 
-        List<MaterialButton> timeButtons = new ArrayList<>();
+                    createAppointment(
+                            userId,
+                            tenChu,
+                            soDienThoai
+                    );
+                })
+                .addOnFailureListener(e ->
+                        showToast("Không thể tải thông tin người dùng")
+                );
+    }
 
-        for (int id : timeButtonIds) {
-            MaterialButton btn = findViewById(id);
-            if(btn != null) {
-                timeButtons.add(btn);
-                btn.setOnClickListener(v -> {
-                    // Đổi màu tất cả nút về mặc định
-                    for (MaterialButton b : timeButtons) {
-                        b.setBackgroundColor(Color.TRANSPARENT);
-                        b.setTextColor(Color.parseColor("#333333"));
-                    }
-                    // Đổi màu nút được chọn
-                    btn.setBackgroundColor(Color.parseColor("#66BB6A")); // Màu xanh lá
-                    btn.setTextColor(Color.WHITE);
-                    selectedTime = btn.getText().toString();
-                });
+    private String getUserName(DocumentSnapshot document) {
+        if (document.exists()) {
+            String name = document.getString("hoTen");
+            return name != null ? name : "Khách hàng";
+        }
+        return "Khách hàng";
+    }
+
+    private String getUserPhone(DocumentSnapshot document) {
+        if (document.exists()) {
+            String phone = document.getString("soDienThoai");
+            return phone != null ? phone : "Chưa cập nhật";
+        }
+        return "Chưa cập nhật";
+    }
+
+    private void createAppointment(
+            String userId,
+            String tenChu,
+            String soDienThoai
+    ) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        String lichHenId =
+                db.collection("LichHen")
+                        .document()
+                        .getId();
+
+        Timestamp thoiGianHen = buildAppointmentTime();
+
+        if (thoiGianHen == null) {
+            showToast("Lỗi định dạng giờ");
+            return;
+        }
+
+        LichHen lichHen = buildLichHen(
+                lichHenId,
+                userId,
+                tenChu,
+                soDienThoai,
+                thoiGianHen
+        );
+
+        saveAppointment(db, lichHenId, lichHen);
+    }
+
+    private Timestamp buildAppointmentTime() {
+        try {
+            Calendar calendar =
+                    (Calendar) selectedDate.clone();
+
+            String[] timeParts =
+                    selectedTime.replace(" ", "")
+                            .split(":");
+
+            calendar.set(
+                    Calendar.HOUR_OF_DAY,
+                    Integer.parseInt(timeParts[0])
+            );
+
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+
+            return new Timestamp(calendar.getTime());
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private LichHen buildLichHen(
+            String lichHenId,
+            String userId,
+            String tenChu,
+            String soDienThoai,
+            Timestamp thoiGianHen
+    ) {
+        LichHen lichHen = new LichHen();
+
+        lichHen.setId(lichHenId);
+        lichHen.setUserId(userId);
+        lichHen.setPetId(selectedPet.getId());
+        lichHen.setChiNhanhId(selectedBranch.getId());
+        lichHen.setThoiGianHen(thoiGianHen);
+
+        lichHen.setDanhSachDichVu(selectedServices);
+        lichHen.setTongTien(totalPrice);
+
+        lichHen.setGhiChu(
+                edtNotes.getText() != null
+                        ? edtNotes.getText().toString().trim()
+                        : ""
+        );
+
+        lichHen.setLyDoTuChoi("");
+        lichHen.setTrangThai("Chờ duyệt");
+
+        lichHen.setTenThuCung(selectedPet.getName());
+        lichHen.setTenChiNhanh(
+                selectedBranch.getTenChiNhanh()
+        );
+
+        lichHen.setTenChuThuCung(tenChu);
+        lichHen.setSoDienThoai(soDienThoai);
+
+        return lichHen;
+    }
+
+    private void saveAppointment(
+            FirebaseFirestore db,
+            String lichHenId,
+            LichHen lichHen
+    ) {
+        db.collection("LichHen")
+                .document(lichHenId)
+                .set(lichHen)
+                .addOnSuccessListener(unused -> {
+                    showToast("Đặt lịch thành công!");
+                    finish();
+                })
+                .addOnFailureListener(e ->
+                        showToast("Lỗi: " + e.getMessage())
+                );
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(
+                this,
+                message,
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+    // ================= ADAPTERS INNER CLASSES =================
+
+    // 1. Adapter cho Dịch vụ
+    private class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHolder> {
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_service_select, parent, false);
+            return new ViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            DichVu dv = allServices.get(position);
+            holder.tvServiceName.setText(dv.getTen());
+            holder.tvServicePrice.setText(String.format("%,d đ", dv.getGia()));
+
+            boolean isSelected = selectedServices.contains(dv);
+            holder.chkService.setChecked(isSelected);
+            holder.cardService.setStrokeColor(isSelected ? Color.parseColor("#2E64FE") : Color.parseColor("#E0E0E0"));
+            holder.cardService.setStrokeWidth(isSelected ? 3 : 1);
+
+            holder.cardService.setOnClickListener(v -> {
+                if (isSelected) {
+                    selectedServices.remove(dv);
+                } else {
+                    selectedServices.add(dv);
+                }
+                calculateTotalPrice();
+                notifyItemChanged(position);
+            });
+        }
+
+        @Override
+        public int getItemCount() { return allServices.size(); }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            MaterialCardView cardService;
+            CheckBox chkService;
+            TextView tvServiceName, tvServicePrice;
+            ViewHolder(View v) {
+                super(v);
+                cardService = v.findViewById(R.id.cardService);
+                chkService = v.findViewById(R.id.chkService);
+                tvServiceName = v.findViewById(R.id.tvServiceName);
+                tvServicePrice = v.findViewById(R.id.tvServicePrice);
             }
         }
     }
 
-    private void thucHienDatLich() {
-        if (selectedPet == null || selectedBranch == null || selectedService.isEmpty() || selectedTime.isEmpty()) {
-            Toast.makeText(this, "Vui lòng chọn đầy đủ thú cưng, dịch vụ, chi nhánh và giờ!", Toast.LENGTH_SHORT).show();
-            return;
+    // 2. Adapter cho Giờ hẹn
+    private class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.ViewHolder> {
+        private final List<String> times;
+        private Map<Integer, Integer> slotCount = new HashMap<>();
+
+        TimeSlotAdapter(List<String> times) { this.times = times; }
+
+        void updateAvailability(Map<Integer, Integer> counts) {
+            this.slotCount = counts;
+            notifyDataSetChanged();
         }
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String userId = FirebaseAuth.getInstance().getUid();
-        String lichHenId = db.collection("LichHen").document().getId();
-
-        // Xử lý tạo Timestamp. Tạm thời sử dụng ngày hôm nay + giờ được chọn
-        Calendar calendar = Calendar.getInstance();
-        try {
-            String[] timeParts = selectedTime.replace(" ", "").split(":");
-            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeParts[0]));
-            calendar.set(Calendar.MINUTE, Integer.parseInt(timeParts[1]));
-        } catch (Exception e) {
-            e.printStackTrace();
+        void resetSelection() {
+            notifyDataSetChanged();
         }
 
-        // Tạo object LichHen
-        LichHen lichHen = new LichHen(
-                lichHenId,
-                userId,
-                selectedPet.getId(),
-                selectedBranch.getId(),
-                new Timestamp(calendar.getTime()),
-                selectedService + " - " + edtNotes.getText().toString(), // Gộp tên dịch vụ và ghi chú
-                "Chờ xác nhận",
-                selectedPet.getName(),
-                selectedBranch.getTenChiNhanh()
-        );
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_time_slot, parent, false);
+            return new ViewHolder(v);
+        }
 
-        // Lưu vào Firestore
-        db.collection("LichHen").document(lichHenId).set(lichHen)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Đặt lịch thành công!", Toast.LENGTH_SHORT).show();
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            String time = times.get(position);
+            holder.tvTime.setText(time);
+
+            int hour = Integer.parseInt(time.split(":")[0]);
+            int count = slotCount.getOrDefault(hour, 0);
+            boolean isFull = count >= MAX_SLOT;
+            boolean isSelected = time.equals(selectedTime);
+
+            if (isFull) {
+                holder.cardTimeSlot.setCardBackgroundColor(Color.parseColor("#F5F5F5"));
+                holder.tvTime.setTextColor(Color.parseColor("#BDBDBD"));
+                holder.cardTimeSlot.setStrokeColor(Color.TRANSPARENT);
+                holder.itemView.setEnabled(false);
+            } else if (isSelected) {
+                holder.cardTimeSlot.setCardBackgroundColor(Color.parseColor("#2E64FE"));
+                holder.tvTime.setTextColor(Color.WHITE);
+                holder.cardTimeSlot.setStrokeColor(Color.TRANSPARENT);
+                holder.itemView.setEnabled(true);
+            } else {
+                holder.cardTimeSlot.setCardBackgroundColor(Color.TRANSPARENT);
+                holder.tvTime.setTextColor(Color.parseColor("#333333"));
+                holder.cardTimeSlot.setStrokeColor(Color.parseColor("#E0E0E0"));
+                holder.itemView.setEnabled(true);
+            }
+
+            holder.itemView.setOnClickListener(v -> {
+                if (!isFull) {
+                    selectedTime = time;
+                    notifyDataSetChanged();
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() { return times.size(); }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            MaterialCardView cardTimeSlot;
+            TextView tvTime;
+            ViewHolder(View v) {
+                super(v);
+                cardTimeSlot = v.findViewById(R.id.cardTimeSlot);
+                tvTime = v.findViewById(R.id.tvTime);
+            }
+        }
     }
 }
