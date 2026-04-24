@@ -9,6 +9,7 @@ import com.example.petcareapp.ui.admin.AChiNhanhActivity;
 import com.example.petcareapp.ui.admin.ADichVuActivity;
 
 import com.example.petcareapp.ui.admin.ANguoiDungActivity;
+import com.example.petcareapp.ui.admin.lichhen.AdminLichHenActivity;
 import com.example.petcareapp.ui.auth.DangNhapActivity;
 import com.example.petcareapp.ui.user.LichHen.AddLichHenActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -23,7 +24,7 @@ public class MenuAdmin {
 
     static {
         mapMenu.put(R.id.nav_chinhanh, AChiNhanhActivity.class);
-        mapMenu.put(R.id.nav_lichhen, AddLichHenActivity.class);
+        mapMenu.put(R.id.nav_lichhen, AdminLichHenActivity.class);
         mapMenu.put(R.id.nav_dichvu, ADichVuActivity.class);
         mapMenu.put(R.id.nav_nguoidung, ANguoiDungActivity.class);
     }

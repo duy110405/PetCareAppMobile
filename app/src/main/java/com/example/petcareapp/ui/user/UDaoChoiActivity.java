@@ -76,14 +76,14 @@ public class UDaoChoiActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 1. Cấu hình OSMDroid (PHẢI GỌI TRƯỚC KHI setContentView)
+        // ấu hình OSMDroid (PHẢI GỌI TRƯỚC KHI setContentView)
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         setContentView(R.layout.user_dao_choi);
 
-        // 2. Ánh xạ View
+        // Ánh xạ View
         tvTime = findViewById(R.id.tvTime);
         tvDistance = findViewById(R.id.tvDistance);
         btnStartTracking = findViewById(R.id.btnStartTracking);
@@ -96,15 +96,15 @@ public class UDaoChoiActivity extends AppCompatActivity {
         MenuUser.setup(this, bottomNav);
         btnBack.setOnClickListener(v -> finish());
 
-        // 3. Setup Firebase & Lấy danh sách Pet
+        // Setup Firebase & Lấy danh sách Pet
         db = FirebaseFirestore.getInstance();
         userId = FirebaseAuth.getInstance().getUid();
         loadPetsIntoSpinner();
 
-        // 4. Setup Bản đồ OSMDroid
+        // Setup Bản đồ OSMDroid
         setupMap();
 
-        // 5. Setup Cảm biến vị trí GPS
+        //  Setup Cảm biến vị trí GPS
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         setupLocationTracking();
         setupTimer();
@@ -116,7 +116,7 @@ public class UDaoChoiActivity extends AppCompatActivity {
             zoomToCurrentLocation();
         }
 
-        // 6. Bắt sự kiện Nút Bấm
+        // Bắt sự kiện Nút Bấm
         btnStartTracking.setOnClickListener(v -> {
             if (!isTracking) startTracking();
             else stopTracking();
@@ -125,9 +125,7 @@ public class UDaoChoiActivity extends AppCompatActivity {
         btnReset.setOnClickListener(v -> resetTracking());
     }
 
-    // ==========================================
     // CÁC HÀM XỬ LÝ BẢN ĐỒ VÀ VỊ TRÍ
-    // ==========================================
     private void setupMap() {
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setMultiTouchControls(true);
@@ -185,10 +183,7 @@ public class UDaoChoiActivity extends AppCompatActivity {
             }
         };
     }
-
-    // ==========================================
     // BẮT ĐẦU / DỪNG / RESET
-    // ==========================================
     private void startTracking() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Cần cấp quyền vị trí!", Toast.LENGTH_SHORT).show();
@@ -203,7 +198,7 @@ public class UDaoChoiActivity extends AppCompatActivity {
         isTracking = true;
         btnStartTracking.setText("Kết thúc dạo chơi");
         btnStartTracking.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#E53935")));
-        btnStartTracking.setIconResource(R.drawable.ic_close); // Thay bằng icon stop/close của bạn
+        btnStartTracking.setIconResource(R.drawable.ic_close);
 
         // Cấu hình cập nhật vị trí mỗi 3 giây
         LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000).build();
@@ -238,9 +233,7 @@ public class UDaoChoiActivity extends AppCompatActivity {
         mapView.invalidate();
     }
 
-    // ==========================================
     // TIMER VÀ LOAD DỮ LIỆU
-    // ==========================================
     private void setupTimer() {
         timerRunnable = new Runnable() {
             @Override
