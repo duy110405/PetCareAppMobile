@@ -131,13 +131,37 @@ public class AddLichHenActivity extends AppCompatActivity {
     }
 
     private void setupDichVu() {
-        allServices.add(new DichVu("Khám tổng quát (khám sức khỏe định kỳ)", 200000));
-        allServices.add(new DichVu("Tiêm phòng (phòng dại, truyền nhiễm)", 500000));
-        allServices.add(new DichVu("Spa (tắm, cắt tỉa lông, làm đẹp)", 200000));
-
+        // Cài đặt RecyclerView trước
         rcvServices.setLayoutManager(new LinearLayoutManager(this));
         serviceAdapter = new ServiceAdapter();
         rcvServices.setAdapter(serviceAdapter);
+
+        // Gọi hàm tải dữ liệu từ Firebase
+        loadDichVuTuFirebase();
+    }
+    private void loadDichVuTuFirebase() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Truy vấn vào bảng "DichVu" (bảng mà Admin đã thêm)
+        db.collection("DichVu")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    allServices.clear(); // Xóa list cũ cho chắc
+
+                    for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                        DichVu dv = doc.toObject(DichVu.class);
+                        if (dv != null) {
+                            dv.setId(doc.getId()); // Gắn ID của Firebase vào Object
+                            allServices.add(dv);
+                        }
+                    }
+
+                    // Báo cho Adapter biết là có data mới để vẽ lại màn hình
+                    serviceAdapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Lỗi tải dịch vụ: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void setupGioHen() {
@@ -413,8 +437,8 @@ public class AddLichHenActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             DichVu dv = allServices.get(position);
-            holder.tvServiceName.setText(dv.getTen());
-            holder.tvServicePrice.setText(String.format("%,d đ", dv.getGia()));
+            holder.tvServiceName.setText(dv.getTenDichVu());
+            holder.tvServicePrice.setText(String.format("%,d đ", (int) dv.getGia()));
 
             boolean isSelected = selectedServices.contains(dv);
             holder.chkService.setChecked(isSelected);

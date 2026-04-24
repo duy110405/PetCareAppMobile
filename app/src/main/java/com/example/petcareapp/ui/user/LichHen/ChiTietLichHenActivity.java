@@ -184,8 +184,8 @@ public class ChiTietLichHenActivity extends AppCompatActivity {
         StringBuilder builder = new StringBuilder();
 
         for (DichVu dichVu : services) {
-            if (dichVu != null && dichVu.getTen() != null) {
-                builder.append(dichVu.getTen())
+            if (dichVu != null && dichVu.getTenDichVu() != null) {
+                builder.append(dichVu.getTenDichVu())
                         .append(", ");
             }
         }

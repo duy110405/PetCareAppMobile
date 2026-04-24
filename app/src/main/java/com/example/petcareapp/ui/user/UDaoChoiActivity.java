@@ -76,7 +76,7 @@ public class UDaoChoiActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // ấu hình OSMDroid (PHẢI GỌI TRƯỚC KHI setContentView)
+        // cấu hình OSMDroid
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         Configuration.getInstance().setUserAgentValue(getPackageName());
@@ -96,7 +96,7 @@ public class UDaoChoiActivity extends AppCompatActivity {
         MenuUser.setup(this, bottomNav);
         btnBack.setOnClickListener(v -> finish());
 
-        // Setup Firebase & Lấy danh sách Pet
+        // Setup Firebase  và Lấy danh sách Pet
         db = FirebaseFirestore.getInstance();
         userId = FirebaseAuth.getInstance().getUid();
         loadPetsIntoSpinner();

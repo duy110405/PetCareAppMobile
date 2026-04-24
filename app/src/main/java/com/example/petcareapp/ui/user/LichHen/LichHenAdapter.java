@@ -127,7 +127,7 @@ public class LichHenAdapter
         StringBuilder builder = new StringBuilder();
 
         for (DichVu service : services) {
-            builder.append(service.getTen())
+            builder.append(service.getTenDichVu())
                     .append(", ");
         }
 
