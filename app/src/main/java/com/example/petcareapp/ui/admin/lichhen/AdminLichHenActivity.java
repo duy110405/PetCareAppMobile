@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.petcareapp.R;
 import com.example.petcareapp.data.model.ChiNhanh;
 import com.example.petcareapp.data.model.LichHen;
+import com.example.petcareapp.utils.MenuAdmin;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -80,6 +82,9 @@ public class AdminLichHenActivity extends AppCompatActivity {
         // Load dữ liệu ban đầu
         loadBranches();
         loadAppointments();
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
+        MenuAdmin.setup(this, bottomNav);
     }
 
     /**
