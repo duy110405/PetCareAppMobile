@@ -104,6 +104,8 @@ public class UTrangChuActivity extends AppCompatActivity {
                 //startActivity(new Intent(UTrangChuActivity.this, UDaoChoiActivity.class));
             });
         }
+
+
     }
 
     // Cập nhật lại danh sách khi quay lại từ các màn hình khác
@@ -114,5 +116,43 @@ public class UTrangChuActivity extends AppCompatActivity {
         if (userId != null) {
             viewModel.loadPets(userId);
         }
+
+        checkThongBao();
+    }
+    private void checkThongBao() {
+        String userId = FirebaseAuth.getInstance().getUid();
+
+        if (userId == null) return;
+
+        com.google.firebase.firestore.FirebaseFirestore
+                .getInstance()
+                .collection("ThongBao")
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("daDoc", false)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+
+                    if (snapshot.isEmpty()) return;
+
+                    StringBuilder message = new StringBuilder();
+
+                    for (var doc : snapshot.getDocuments()) {
+                        String noiDung = doc.getString("noiDung");
+
+                        if (noiDung != null) {
+                            message.append("• ")
+                                    .append(noiDung)
+                                    .append("\n\n");
+                        }
+
+                        doc.getReference().update("daDoc", true);
+                    }
+
+                    new androidx.appcompat.app.AlertDialog.Builder(this)
+                            .setTitle("Thông báo")
+                            .setMessage(message.toString())
+                            .setPositiveButton("OK", null)
+                            .show();
+                });
     }
 }

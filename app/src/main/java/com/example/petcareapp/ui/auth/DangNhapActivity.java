@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.petcareapp.R;
 import com.example.petcareapp.data.model.User;
 import com.example.petcareapp.ui.admin.AChiNhanhActivity; // Sửa thành trang chủ Admin của bạn
+import com.example.petcareapp.ui.admin.lichhen.AdminLichHenActivity;
 import com.example.petcareapp.ui.user.TrangChu.UTrangChuActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -29,6 +30,7 @@ public class DangNhapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dangnhap);
 
+
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
@@ -36,7 +38,7 @@ public class DangNhapActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance(); // Khởi tạo Database
-
+        mAuth.signOut();
         tvRegister.setOnClickListener(v -> startActivity(new Intent(this, DangKyActivity.class)));
         btnLogin.setOnClickListener(v -> loginUser());
 
@@ -101,21 +103,34 @@ public class DangNhapActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(doc -> {
 
-                    Boolean locked = doc.getBoolean("locked");
+                    if (doc.exists()) {
 
-                    if (locked != null && locked) {
-                        FirebaseAuth.getInstance().signOut();
-                        Toast.makeText(this, "Tài khoản đã bị khóa!", Toast.LENGTH_LONG).show();
-                        return;
-                    }
+                        // 🔒 Check khóa tài khoản
+                        Boolean locked = doc.getBoolean("locked");
+                        if (locked != null && locked) {
+                            FirebaseAuth.getInstance().signOut();
+                            Toast.makeText(this, "Tài khoản đã bị khóa!", Toast.LENGTH_LONG).show();
+                            return;
+                        }
 
-                    String role = doc.getString("role");
+                        // 🔑 Lấy role
+                        String role = doc.getString("role");
 
-                    if ("admin".equals(role)) {
-                        startActivity(new Intent(this, AChiNhanhActivity.class));
+                        // 🔀 Điều hướng theo role
+                        if ("admin".equals(role)) {
+                            startActivity(new Intent(this, AdminLichHenActivity.class));
+                        } else {
+                            startActivity(new Intent(this, UTrangChuActivity.class));
+                        }
+
+                        finish();
+
                     } else {
-                        startActivity(new Intent(this, UTrangChuActivity.class));
+                        Toast.makeText(this, "Lỗi: Không tìm thấy hồ sơ người dùng", Toast.LENGTH_SHORT).show();
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Lỗi kết nối: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 

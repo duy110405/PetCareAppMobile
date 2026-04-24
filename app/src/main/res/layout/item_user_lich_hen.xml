@@ -88,5 +88,15 @@
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="@id/tvPetName"
             app:layout_constraintTop_toBottomOf="@id/tvService" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelAppointment"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Hủy lịch"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/tvTime"
+            app:layout_constraintStart_toStartOf="@id/tvTime"
+            android:layout_marginTop="8dp"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

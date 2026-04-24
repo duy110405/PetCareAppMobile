@@ -41,6 +41,9 @@ import java.util.Map;
 
 public class PetDetailActivity extends AppCompatActivity {
     private ImageView imgAvatar;
+    private TextView tvAppointmentHistory;
+    private View cvPetAppointment;
+    private TextView tvApptName, tvApptStatus, tvApptDesc, tvApptTime;
     private EditText edtName, edtBreed, edtDob, edtWeight, edtColor;
     private MaterialButton btnDelete;
 
@@ -83,6 +86,26 @@ public class PetDetailActivity extends AppCompatActivity {
         edtDob = findViewById(R.id.edtDob);
         edtWeight = findViewById(R.id.edtWeight);
         edtColor = findViewById(R.id.edtColor);
+
+        // ÁNH XẠ LỊCH HẸN
+        cvPetAppointment = findViewById(R.id.cvPetAppointment);
+        tvApptName = findViewById(R.id.tvApptName);
+        tvApptStatus = findViewById(R.id.tvApptStatus);
+        tvApptDesc = findViewById(R.id.tvApptDesc);
+        tvApptTime = findViewById(R.id.tvApptTime);
+
+        // Ẩn đi mặc định, nếu có lịch mới hiện lên
+        cvPetAppointment.setVisibility(View.GONE);// Ánh xạ nút Lịch sử hẹn
+        tvAppointmentHistory = findViewById(R.id.tvAppointmentHistory);
+        tvAppointmentHistory.setOnClickListener(v -> {
+            Intent intent = new Intent(this, PetLichSuHenActivity.class);
+            intent.putExtra("petId", petId);
+            startActivity(intent);
+        });
+
+        // GỌI HÀM NÀY ĐỂ HIỂN THỊ LỊCH HẸN RA MÀN HÌNH
+        loadPetAppointment();
+
 
         btnDelete = findViewById(R.id.btnDeletePet);
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
@@ -450,5 +473,60 @@ public class PetDetailActivity extends AppCompatActivity {
         });
 
         alarmContainer.addView(view);
+
+
+    }
+    private void loadPetAppointment() {
+        if (petId == null) return;
+
+        db.collection("LichHen")
+                .whereEqualTo("petId", petId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.isEmpty()) {
+                        cvPetAppointment.setVisibility(View.GONE);
+                        return;
+                    }
+
+                    // Đưa vào List để sắp xếp
+                    java.util.List<com.example.petcareapp.data.model.LichHen> listAppt = new java.util.ArrayList<>();
+                    for (var doc : snapshot.getDocuments()) {
+                        com.example.petcareapp.data.model.LichHen appt = doc.toObject(com.example.petcareapp.data.model.LichHen.class);
+                        if (appt != null) listAppt.add(appt);
+                    }
+
+                    if (listAppt.isEmpty()) return;
+
+                    // Sắp xếp giảm dần theo thời gian (Lấy cái mới nhất lên đầu)
+                    java.util.Collections.sort(listAppt, (o1, o2) -> {
+                        if (o1.getThoiGianHen() == null || o2.getThoiGianHen() == null) return 0;
+                        return o2.getThoiGianHen().toDate().compareTo(o1.getThoiGianHen().toDate());
+                    });
+
+                    // Lấy phần tử đầu tiên (Mới nhất)
+                    com.example.petcareapp.data.model.LichHen latestAppt = listAppt.get(0);
+
+                    cvPetAppointment.setVisibility(View.VISIBLE);
+                    tvApptName.setText(latestAppt.getTenThuCung());
+                    tvApptStatus.setText(latestAppt.getTrangThai());
+
+                    // Nối tên dịch vụ
+                    StringBuilder dvText = new StringBuilder();
+                    if (latestAppt.getDanhSachDichVu() != null) {
+                        for (com.example.petcareapp.data.model.DichVu dv : latestAppt.getDanhSachDichVu()) {
+                            dvText.append(dv.getTen()).append(", ");
+                        }
+                        if (dvText.length() > 0) dvText.setLength(dvText.length() - 2);
+                    }
+                    tvApptDesc.setText(dvText.toString().isEmpty() ? "Không có dịch vụ" : dvText.toString());
+
+                    if (latestAppt.getThoiGianHen() != null) {
+                        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm - dd/MM/yyyy", java.util.Locale.getDefault());
+                        tvApptTime.setText(sdf.format(latestAppt.getThoiGianHen().toDate()));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    cvPetAppointment.setVisibility(View.GONE);
+                });
     }
 }
