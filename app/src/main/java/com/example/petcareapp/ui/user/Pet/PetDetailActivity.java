@@ -514,7 +514,7 @@ public class PetDetailActivity extends AppCompatActivity {
                     StringBuilder dvText = new StringBuilder();
                     if (latestAppt.getDanhSachDichVu() != null) {
                         for (com.example.petcareapp.data.model.DichVu dv : latestAppt.getDanhSachDichVu()) {
-                            dvText.append(dv.getTen()).append(", ");
+                            dvText.append(dv.getTenDichVu()).append(", ");
                         }
                         if (dvText.length() > 0) dvText.setLength(dvText.length() - 2);
                     }

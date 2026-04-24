@@ -149,7 +149,7 @@ public class AdminChiTietLichHenActivity extends AppCompatActivity {
 
                         for (com.example.petcareapp.data.model.DichVu dv
                                 : item.getDanhSachDichVu()) {
-                            dvBuilder.append(dv.getTen()).append(", ");
+                            dvBuilder.append(dv.getTenDichVu()).append(", ");
                         }
 
                         // Xóa dấu phẩy cuối cùng
