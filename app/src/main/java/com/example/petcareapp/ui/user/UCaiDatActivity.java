@@ -67,7 +67,10 @@ public class UCaiDatActivity extends AppCompatActivity implements SensorEventLis
 
         // 4. Xử lý sự kiện bấm các nút
         btnDangXuat.setOnClickListener(v -> hienThiBangHoiDangXuat());
-        btnHoSo.setOnClickListener(v -> Toast.makeText(this, "Chức năng Hồ sơ đang phát triển", Toast.LENGTH_SHORT).show());
+        btnHoSo.setOnClickListener(v -> {
+            Intent intent = new Intent(UCaiDatActivity.this, UserProfileActivity.class);
+            startActivity(intent);
+        });
 
         // Cho phép chuyển đổi thủ công (Click vào thay vì chờ cảm biến)
         btnCheDoSangToi.setOnClickListener(v -> {
