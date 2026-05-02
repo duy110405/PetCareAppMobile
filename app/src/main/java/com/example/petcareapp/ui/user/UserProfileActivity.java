@@ -22,7 +22,7 @@ import java.io.InputStream;
 
 public class UserProfileActivity extends AppCompatActivity {
 
-    private EditText edtUsername, edtEmail, edtPhone, edtPetCount, edtAppointment;
+    private EditText edtUsername, edtEmail, edtPhone, edtPetCount;
     private ImageView imgAvatar, btnBack;
     private Button btnEdit, btnGallery;
 
@@ -42,7 +42,6 @@ public class UserProfileActivity extends AppCompatActivity {
         edtEmail = findViewById(R.id.edtEmail);
         edtPhone = findViewById(R.id.edtPhone);
         edtPetCount = findViewById(R.id.edtPetCount);
-        edtAppointment = findViewById(R.id.edtAppointment);
 
         imgAvatar = findViewById(R.id.imgAvatar);
         btnBack = findViewById(R.id.btnBack);
@@ -96,8 +95,6 @@ public class UserProfileActivity extends AppCompatActivity {
                         Long petCount = documentSnapshot.getLong("petCount");
                         edtPetCount.setText(petCount != null ? String.valueOf(petCount) : "0");
 
-                        edtAppointment.setText("0");
-
                         // ===== LOAD AVATAR BASE64 =====
                         String base64Image = documentSnapshot.getString("avatarBase64");
 
@@ -119,7 +116,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
         edtEmail.setEnabled(false);
         edtPetCount.setEnabled(false);
-        edtAppointment.setEnabled(false);
     }
 
     // ================= UPDATE USER =================
