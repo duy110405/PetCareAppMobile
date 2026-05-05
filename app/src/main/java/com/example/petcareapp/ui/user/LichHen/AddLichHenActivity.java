@@ -43,7 +43,7 @@ import java.util.Map;
 
 public class AddLichHenActivity extends AppCompatActivity {
 
-    private AutoCompleteTextView spinnerPet, spinnerBranch;
+    private AutoCompleteTextView spinnerPet, spinnerBranch , spinnerVoucher;
     private RecyclerView rcvServices, rcvTimeSlots;
     private TextView tvTotalPrice;
     private TextInputEditText edtNotes, edtSelectDate;
@@ -67,6 +67,12 @@ public class AddLichHenActivity extends AppCompatActivity {
     private TimeSlotAdapter timeSlotAdapter;
 
     private static final int MAX_SLOT = 3;
+    private List<com.example.petcareapp.data.model.KhoVoucher> userKhoVoucherList = new ArrayList<>();
+    private List<com.example.petcareapp.data.model.Voucher> userVoucherDetails = new ArrayList<>();
+
+    private com.example.petcareapp.data.model.KhoVoucher selectedKhoVoucher = null;
+    private com.example.petcareapp.data.model.Voucher selectedVoucherDetail = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +89,7 @@ public class AddLichHenActivity extends AppCompatActivity {
     private void initViews() {
         spinnerPet = findViewById(R.id.spinnerPet);
         spinnerBranch = findViewById(R.id.spinnerBranch);
+        spinnerVoucher = findViewById(R.id.spinnerVoucher);
         rcvServices = findViewById(R.id.rcvServices);
         rcvTimeSlots = findViewById(R.id.rcvTimeSlots);
         tvTotalPrice = findViewById(R.id.tvTotalPrice);
@@ -208,6 +215,13 @@ public class AddLichHenActivity extends AppCompatActivity {
         for (DichVu dv : selectedServices) {
             totalPrice += dv.getGia();
         }
+        if (selectedVoucherDetail != null) {
+            totalPrice -= selectedVoucherDetail.getSoTienGiam();
+        }
+        // Đảm bảo tổng tiền không bị âm
+        if (totalPrice < 0) {
+            totalPrice = 0;
+        }
         tvTotalPrice.setText(String.format("%,d đ", totalPrice));
     }
 
@@ -244,8 +258,77 @@ public class AddLichHenActivity extends AppCompatActivity {
                 timeSlotAdapter.resetSelection();
             });
         });
+        loadUserVouchers();
     }
+    // Hàm tải Voucher của User hiện tại từ Firebase
+    private void loadUserVouchers() {
+        String userId = FirebaseAuth.getInstance().getUid();
+        if (userId == null) return;
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // 1. Lấy toàn bộ bảng Voucher (để lấy tên và số tiền giảm)
+        db.collection("Voucher").get().addOnSuccessListener(voucherSnap -> {
+            List<com.example.petcareapp.data.model.Voucher> allVouchers = new ArrayList<>();
+            for (DocumentSnapshot doc : voucherSnap.getDocuments()) {
+                com.example.petcareapp.data.model.Voucher v = doc.toObject(com.example.petcareapp.data.model.Voucher.class);
+                if (v != null) {
+                    v.setIdVoucher(doc.getId());
+                    allVouchers.add(v);
+                }
+            }
+
+            // 2. Lấy danh sách Voucher TRONG KHO của user mà "Chưa dùng"
+            db.collection("KhoVoucher")
+                    .whereEqualTo("idUser", userId)
+                    .whereEqualTo("trangThai", "Chưa dùng")
+                    .get()
+                    .addOnSuccessListener(khoSnap -> {
+                        userKhoVoucherList.clear();
+                        userVoucherDetails.clear();
+                        List<String> displayNames = new ArrayList<>();
+
+                        // Thêm tùy chọn mặc định đầu tiên
+                        displayNames.add("-- Không dùng Voucher --");
+
+                        for (DocumentSnapshot doc : khoSnap.getDocuments()) {
+                            com.example.petcareapp.data.model.KhoVoucher kv = doc.toObject(com.example.petcareapp.data.model.KhoVoucher.class);
+                            if (kv != null) {
+                                kv.setId(doc.getId());
+
+                                // Ghép dữ liệu từ KhoVoucher với bảng Voucher gốc
+                                for (com.example.petcareapp.data.model.Voucher v : allVouchers) {
+                                    if (v.getIdVoucher().equals(kv.getIdVoucher())) {
+                                        userKhoVoucherList.add(kv);
+                                        userVoucherDetails.add(v);
+                                        displayNames.add(v.getTenVoucher() + " (Giảm " + String.format("%,d", v.getSoTienGiam()) + "đ)");
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Đưa dữ liệu lên Spinner
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, displayNames);
+                        spinnerVoucher.setAdapter(adapter);
+
+                        // Bắt sự kiện khi User chọn Voucher
+                        spinnerVoucher.setOnItemClickListener((parent, view, position, id) -> {
+                            if (position == 0) {
+                                // Nếu chọn "Không dùng"
+                                selectedKhoVoucher = null;
+                                selectedVoucherDetail = null;
+                            } else {
+                                // Trừ đi 1 vì index 0 là dòng "Không dùng Voucher"
+                                selectedKhoVoucher = userKhoVoucherList.get(position - 1);
+                                selectedVoucherDetail = userVoucherDetails.get(position - 1);
+                            }
+                            // Gọi lại hàm tính tiền để trừ đi số tiền giảm
+                            calculateTotalPrice();
+                        });
+                    });
+        });
+    }
     private void thucHienDatLich() {
         if (!isInputValid()) {
             showToast("Vui lòng chọn đầy đủ thông tin!");
@@ -379,12 +462,16 @@ public class AddLichHenActivity extends AppCompatActivity {
         lichHen.setDanhSachDichVu(selectedServices);
         lichHen.setTongTien(totalPrice);
 
-        lichHen.setGhiChu(
-                edtNotes.getText() != null
-                        ? edtNotes.getText().toString().trim()
-                        : ""
-        );
+        String ghiChuGoc = edtNotes.getText() != null ? edtNotes.getText().toString().trim() : "";
+        // Nếu khách có xài Voucher, nối thêm câu thông báo vào ghi chú
+        if (selectedVoucherDetail != null) {
+            String thongTinVoucher = "\n[Đã áp dụng: " + selectedVoucherDetail.getTenVoucher() +
+                    " - Giảm " + String.format("%,d đ", selectedVoucherDetail.getSoTienGiam()) + "]";
 
+            ghiChuGoc = ghiChuGoc + thongTinVoucher;
+        }
+
+        lichHen.setGhiChu(ghiChuGoc.trim());
         lichHen.setLyDoTuChoi("");
         lichHen.setTrangThai("Chờ duyệt");
 
@@ -404,9 +491,19 @@ public class AddLichHenActivity extends AppCompatActivity {
             String lichHenId,
             LichHen lichHen
     ) {
-        db.collection("LichHen")
-                .document(lichHenId)
-                .set(lichHen)
+        // Sử dụng WriteBatch để thực hiện 2 lệnh cùng lúc một cách an toàn
+        com.google.firebase.firestore.WriteBatch batch = db.batch();
+
+        // Lệnh 1: Lưu Lịch hẹn vào Database
+        batch.set(db.collection("LichHen").document(lichHenId), lichHen);
+
+        // Lệnh 2: Nếu có xài Voucher -> Chuyển trạng thái Voucher đó thành "Đã dùng"
+        if (selectedKhoVoucher != null) {
+            batch.update(db.collection("KhoVoucher").document(selectedKhoVoucher.getId()), "trangThai", "Đã dùng");
+        }
+
+        // Chạy đồng thời
+        batch.commit()
                 .addOnSuccessListener(unused -> {
                     showToast("Đặt lịch thành công!");
                     finish();

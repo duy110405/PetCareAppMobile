@@ -15,7 +15,10 @@
         android:id="@+id/nav_chinhanh"
         android:icon="@drawable/ic_location_outline"
         android:title="Chi nhánh"/>
-
+    <item
+        android:id="@+id/nav_voucher"
+        android:icon="@drawable/ic_voucher"
+        android:title="Voucher"/>
     <item
         android:id="@+id/nav_nguoidung"
         android:icon="@drawable/ic_person"

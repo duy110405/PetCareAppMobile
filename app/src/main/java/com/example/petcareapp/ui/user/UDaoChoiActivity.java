@@ -32,6 +32,7 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -207,6 +208,16 @@ public class UDaoChoiActivity extends AppCompatActivity {
         timerHandler.post(timerRunnable);
     }
 
+    // Hàm quy đổi KM ra Điểm thưởng (Gamification)
+    private int calculatePoints(double distance) {
+        if (distance < 1.0) {
+            return 0; // Dưới 1KM không được cộng điểm
+        } else if (distance <= 3.0) {
+            return (int) (distance * 10); // Từ 1-3KM: 10 điểm / 1 KM
+        } else {
+            return (int) (distance * 15); // Trên 3KM: 15 điểm / 1 KM
+        }
+    }
     private void stopTracking() {
         isTracking = false;
         btnStartTracking.setText("Bắt đầu theo dõi");
@@ -215,8 +226,28 @@ public class UDaoChoiActivity extends AppCompatActivity {
 
         fusedLocationClient.removeLocationUpdates(locationCallback);
         timerHandler.removeCallbacks(timerRunnable);
+        int diemThuong = calculatePoints(totalDistance);
 
-        Toast.makeText(this, "Đã kết thúc! Quãng đường: " + String.format(Locale.getDefault(), "%.2f KM", totalDistance), Toast.LENGTH_LONG).show();
+        if (diemThuong > 0 && userId != null) {
+            // Cộng dồn điểm lên Firebase
+            db.collection("users").document(userId)
+                    .update("tongDiem", FieldValue.increment(diemThuong))
+                    .addOnSuccessListener(aVoid -> {
+                        String msg = String.format(Locale.getDefault(),
+                                "Hoàn thành: %.2f KM\nTuyệt vời! Bạn nhận được +%d điểm \uD83C\uDF89",
+                                totalDistance, diemThuong);
+                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Không thể cập nhật điểm: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            // Đi chưa đủ 1KM nên không có điểm
+            String msg = String.format(Locale.getDefault(),
+                    "Đã kết thúc: %.2f KM\nHãy cố gắng đi bộ hơn 1 KM để nhận điểm nhé!",
+                    totalDistance);
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void resetTracking() {

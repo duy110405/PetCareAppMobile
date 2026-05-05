@@ -11,6 +11,7 @@ public class User {
     private boolean locked;
     private int petCount;
     private String role;
+    private int tongDiem;
 
     public User() {}
 
@@ -35,6 +36,34 @@ public class User {
         this.locked = locked;
     }
     public void setId(String id) { this.id = id; }
+
+    public int getTongDiem() {
+        return tongDiem;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setPetCount(int petCount) {
+        this.petCount = petCount;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public void setTongDiem(int tongDiem) {
+        this.tongDiem = tongDiem;
+    }
 }
 
 
