@@ -9,6 +9,7 @@ import com.example.petcareapp.ui.admin.AChiNhanhActivity;
 import com.example.petcareapp.ui.admin.ADichVuActivity;
 
 import com.example.petcareapp.ui.admin.ANguoiDungActivity;
+import com.example.petcareapp.ui.admin.AVoucherActivity;
 import com.example.petcareapp.ui.admin.lichhen.AdminLichHenActivity;
 import com.example.petcareapp.ui.auth.DangNhapActivity;
 import com.example.petcareapp.ui.user.LichHen.AddLichHenActivity;
@@ -27,6 +28,7 @@ public class MenuAdmin {
         mapMenu.put(R.id.nav_lichhen, AdminLichHenActivity.class);
         mapMenu.put(R.id.nav_dichvu, ADichVuActivity.class);
         mapMenu.put(R.id.nav_nguoidung, ANguoiDungActivity.class);
+        mapMenu.put(R.id.nav_voucher, AVoucherActivity.class);
     }
 
     public static void setup(Activity activity, BottomNavigationView navView) {
@@ -65,7 +67,7 @@ public class MenuAdmin {
                 .setTitle("Đăng xuất")
                 .setMessage("Bạn có chắc chắn muốn thoát khỏi phiên làm việc?")
                 .setPositiveButton("Thoát", (dialog, which) -> {
-                    // Đăng xuất Firebase (Nếu bạn có dùng Firebase Authentication)
+                    // Đăng xuất Firebase
                      FirebaseAuth.getInstance().signOut();
                     // Chuyển về màn hình Đăng Nhập
                     Intent intent = new Intent(activity, DangNhapActivity.class);

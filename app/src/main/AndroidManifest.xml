@@ -51,6 +51,7 @@
         <activity android:name=".ui.main.MainActivity"/>
         <activity android:name=".ui.admin.AChiNhanhActivity"/>
         <activity android:name=".ui.admin.ADichVuActivity"/>
+        <activity android:name=".ui.admin.AVoucherActivity"/>
         <activity android:name=".ui.user.UTimPhongActivity"/>
         <activity android:name=".ui.user.UDaoChoiActivity"/>
         <activity android:name=".ui.user.Pet.AddPetActivity" />
@@ -58,7 +59,7 @@
         <activity android:name=".ui.user.Pet.ThemChuongBaoActivity"/>
         <activity android:name=".ui.user.TrangChu.UTrangChuActivity" />
         <activity android:name=".ui.user.UserProfileActivity" />
-
+        <activity android:name=".ui.user.UVoucherActivity" />
         <activity android:name=".ui.user.LichHen.AddLichHenActivity"/>
         <activity android:name=".ui.user.ULichHenActivity" />
         <activity android:name=".ui.admin.ANguoiDungActivity" />

@@ -24,7 +24,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private EditText edtUsername, edtEmail, edtPhone, edtPetCount;
     private ImageView imgAvatar, btnBack;
-    private Button btnEdit, btnGallery;
+    private Button btnEdit, btnGallery , btnDoiVoucher;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -47,6 +47,7 @@ public class UserProfileActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         btnEdit = findViewById(R.id.btnEdit);
         btnGallery = findViewById(R.id.btnGallery);
+        btnDoiVoucher = findViewById(R.id.btnDoiVoucher);
 
         // ===== FIREBASE =====
         mAuth = FirebaseAuth.getInstance();
@@ -64,7 +65,10 @@ public class UserProfileActivity extends AppCompatActivity {
         setEditable(false);
 
         // ===== BACK =====
-        btnBack.setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(v.getContext(), UCaiDatActivity.class);
+            startActivity(intent);
+        });
 
         // ===== CHỌN ẢNH =====
         btnGallery.setOnClickListener(v -> openGallery());
@@ -78,6 +82,10 @@ public class UserProfileActivity extends AppCompatActivity {
             } else {
                 updateUser();
             }
+        });
+        btnDoiVoucher.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(v.getContext(), UVoucherActivity.class);
+            startActivity(intent);
         });
     }
 
