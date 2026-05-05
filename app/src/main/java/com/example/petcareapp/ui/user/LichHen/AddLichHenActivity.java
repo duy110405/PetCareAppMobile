@@ -34,6 +34,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,7 +44,7 @@ import java.util.Map;
 
 public class AddLichHenActivity extends AppCompatActivity {
 
-    private AutoCompleteTextView spinnerPet, spinnerBranch , spinnerVoucher;
+    private AutoCompleteTextView spinnerPet, spinnerBranch, spinnerVoucher;
     private RecyclerView rcvServices, rcvTimeSlots;
     private TextView tvTotalPrice;
     private TextInputEditText edtNotes, edtSelectDate;
@@ -67,6 +68,7 @@ public class AddLichHenActivity extends AppCompatActivity {
     private TimeSlotAdapter timeSlotAdapter;
 
     private static final int MAX_SLOT = 3;
+
     private List<com.example.petcareapp.data.model.KhoVoucher> userKhoVoucherList = new ArrayList<>();
     private List<com.example.petcareapp.data.model.Voucher> userVoucherDetails = new ArrayList<>();
 
@@ -146,6 +148,7 @@ public class AddLichHenActivity extends AppCompatActivity {
         // Gọi hàm tải dữ liệu từ Firebase
         loadDichVuTuFirebase();
     }
+
     private void loadDichVuTuFirebase() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -258,8 +261,11 @@ public class AddLichHenActivity extends AppCompatActivity {
                 timeSlotAdapter.resetSelection();
             });
         });
+
+        // Gọi hàm load voucher sau khi khởi tạo
         loadUserVouchers();
     }
+
     // Hàm tải Voucher của User hiện tại từ Firebase
     private void loadUserVouchers() {
         String userId = FirebaseAuth.getInstance().getUid();
@@ -329,6 +335,7 @@ public class AddLichHenActivity extends AppCompatActivity {
                     });
         });
     }
+
     private void thucHienDatLich() {
         if (!isInputValid()) {
             showToast("Vui lòng chọn đầy đủ thông tin!");
@@ -463,6 +470,7 @@ public class AddLichHenActivity extends AppCompatActivity {
         lichHen.setTongTien(totalPrice);
 
         String ghiChuGoc = edtNotes.getText() != null ? edtNotes.getText().toString().trim() : "";
+
         // Nếu khách có xài Voucher, nối thêm câu thông báo vào ghi chú
         if (selectedVoucherDetail != null) {
             String thongTinVoucher = "\n[Đã áp dụng: " + selectedVoucherDetail.getTenVoucher() +
@@ -492,7 +500,7 @@ public class AddLichHenActivity extends AppCompatActivity {
             LichHen lichHen
     ) {
         // Sử dụng WriteBatch để thực hiện 2 lệnh cùng lúc một cách an toàn
-        com.google.firebase.firestore.WriteBatch batch = db.batch();
+        WriteBatch batch = db.batch();
 
         // Lệnh 1: Lưu Lịch hẹn vào Database
         batch.set(db.collection("LichHen").document(lichHenId), lichHen);
@@ -520,6 +528,7 @@ public class AddLichHenActivity extends AppCompatActivity {
                 Toast.LENGTH_SHORT
         ).show();
     }
+
     // ================= ADAPTERS INNER CLASSES =================
 
     // 1. Adapter cho Dịch vụ
