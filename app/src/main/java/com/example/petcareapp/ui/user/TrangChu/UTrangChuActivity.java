@@ -16,6 +16,7 @@ import com.example.petcareapp.ui.user.Pet.PetAdapter;
 import com.example.petcareapp.ui.user.Pet.PetDetailActivity;
 import com.example.petcareapp.ui.user.Pet.PetViewModel;
 //import com.example.petcareapp.utils.MenuUser;
+import com.example.petcareapp.utils.LightSensorHelper;
 import com.example.petcareapp.utils.MenuUser;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
@@ -31,6 +32,7 @@ public class UTrangChuActivity extends AppCompatActivity {
     private TextView tvPetCount, tvUserName;
     private MaterialButton btnAddPet;
     private MaterialCardView cardDatLichKham, cardDaoChoi;
+    private LightSensorHelper lightSensorHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,7 @@ public class UTrangChuActivity extends AppCompatActivity {
         btnAddPet = findViewById(R.id.btnAddPet);
         cardDatLichKham = findViewById(R.id.cardDatLichKham); // ID đã thêm ở XML
         cardDaoChoi = findViewById(R.id.cardDaoChoi);       // ID đã thêm ở XML
-
+        lightSensorHelper = new LightSensorHelper(this);
         // Cấu hình Bottom Navigation thông qua lớp Utility MenuUser
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
 
@@ -116,6 +118,9 @@ public class UTrangChuActivity extends AppCompatActivity {
         if (userId != null) {
             viewModel.loadPets(userId);
         }
+        if (lightSensorHelper != null) {
+            lightSensorHelper.register();
+        }
 
         checkThongBao();
     }
@@ -154,5 +159,11 @@ public class UTrangChuActivity extends AppCompatActivity {
                             .setPositiveButton("OK", null)
                             .show();
                 });
+    }
+    protected void onPause() {
+        super.onPause();
+        if (lightSensorHelper != null) {
+            lightSensorHelper.unregister();
+        }
     }
 }

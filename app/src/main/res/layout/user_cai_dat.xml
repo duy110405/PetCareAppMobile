@@ -88,13 +88,21 @@
                 app:tint="#000000" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_marginStart="16dp"
-                android:text="Thay đổi chế độ sáng/tối"
+                android:text="Tự động đổi nền theo ánh sáng"
                 android:textColor="#000000"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
+            <!-- NÚT GẠT ĐÃ ĐƯỢC THÊM VÀO ĐÂY -->
+            <Switch
+                android:id="@+id/switchAutoTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"/>
         </LinearLayout>
         <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#000000"/>
 
