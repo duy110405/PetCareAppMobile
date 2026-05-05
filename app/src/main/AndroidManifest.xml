@@ -51,10 +51,7 @@
         <activity android:name=".ui.main.MainActivity"/>
         <activity android:name=".ui.admin.AChiNhanhActivity"/>
         <activity android:name=".ui.admin.ADichVuActivity"/>
-<<<<<<< HEAD
         <activity android:name=".ui.admin.AVoucherActivity"/>
-=======
->>>>>>> e9bd282 (restore lich kham lan 2 sau khi merge)
         <activity android:name=".ui.user.UTimPhongActivity"/>
         <activity android:name=".ui.user.UDaoChoiActivity"/>
         <activity android:name=".ui.user.Pet.AddPetActivity" />
@@ -62,11 +59,7 @@
         <activity android:name=".ui.user.Pet.ThemChuongBaoActivity"/>
         <activity android:name=".ui.user.TrangChu.UTrangChuActivity" />
         <activity android:name=".ui.user.UserProfileActivity" />
-<<<<<<< HEAD
         <activity android:name=".ui.user.UVoucherActivity" />
-=======
-
->>>>>>> e9bd282 (restore lich kham lan 2 sau khi merge)
         <activity android:name=".ui.user.LichHen.AddLichHenActivity"/>
         <activity android:name=".ui.user.ULichHenActivity" />
         <activity android:name=".ui.admin.ANguoiDungActivity" />
