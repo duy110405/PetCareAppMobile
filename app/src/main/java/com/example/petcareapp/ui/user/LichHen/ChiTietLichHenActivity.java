@@ -2,6 +2,7 @@ package com.example.petcareapp.ui.user.LichHen;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,18 +22,13 @@ import java.util.Locale;
  * Activity hiển thị chi tiết lịch hẹn của người dùng
  *
  * Bao gồm:
- * - thông tin thú cưng
- * - thời gian lịch hẹn
- * - chi nhánh
- * - dịch vụ đã chọn
- * - tổng tiền
- * - ghi chú
- * - trạng thái
- * - lý do từ chối (nếu có)
+ * - thông tin thú cưng, thời gian, chi nhánh, dịch vụ, tổng tiền, ghi chú
+ * - trạng thái, lý do từ chối (nếu có)
+ * - TÍCH HỢP MỚI: Hiển thị Kết quả khám bệnh & Đơn thuốc (Nếu đã Hoàn thành)
  */
 public class ChiTietLichHenActivity extends AppCompatActivity {
 
-    // Các TextView hiển thị thông tin
+    // Các TextView hiển thị thông tin cơ bản
     private TextView tvPetName;
     private TextView tvTime;
     private TextView tvBranch;
@@ -41,6 +37,12 @@ public class ChiTietLichHenActivity extends AppCompatActivity {
     private TextView tvNote;
     private TextView tvStatus;
     private TextView tvRejectReason;
+
+    // Các thành phần UI hiển thị Kết quả khám bệnh
+    private LinearLayout layoutKetQuaKham;
+    private TextView txtUserTenBacSi;
+    private TextView txtUserChanDoan;
+    private TextView txtUserDonThuoc;
 
     // ID lịch hẹn được truyền từ Intent
     private String lichHenId;
@@ -82,6 +84,7 @@ public class ChiTietLichHenActivity extends AppCompatActivity {
      * Ánh xạ view từ XML
      */
     private void initViews() {
+        // Thông tin cơ bản
         tvPetName = findViewById(R.id.tvPetName);
         tvTime = findViewById(R.id.tvTime);
         tvBranch = findViewById(R.id.tvBranch);
@@ -90,6 +93,12 @@ public class ChiTietLichHenActivity extends AppCompatActivity {
         tvNote = findViewById(R.id.tvNote);
         tvStatus = findViewById(R.id.tvStatus);
         tvRejectReason = findViewById(R.id.tvRejectReason);
+
+        // Thông tin Bệnh án
+        layoutKetQuaKham = findViewById(R.id.layoutKetQuaKham);
+        txtUserTenBacSi = findViewById(R.id.txtUserTenBacSi);
+        txtUserChanDoan = findViewById(R.id.txtUserChanDoan);
+        txtUserDonThuoc = findViewById(R.id.txtUserDonThuoc);
     }
 
     /*
@@ -138,6 +147,43 @@ public class ChiTietLichHenActivity extends AppCompatActivity {
         displayNoteInfo(lichHen);
         displayStatusInfo(lichHen);
         displayRejectReason(lichHen);
+
+        // Gọi thêm hàm hiển thị Bệnh án
+        displayPhieuKhamInfo(lichHen);
+    }
+
+    /*
+     * TRUY XUẤT VÀ HIỂN THỊ PHIẾU KHÁM
+     */
+    private void displayPhieuKhamInfo(LichHen lichHen) {
+        // Chỉ tải dữ liệu phiếu khám khi lịch hẹn đã hoàn thành
+        if ("Hoàn thành".equals(lichHen.getTrangThai())) {
+            FirebaseFirestore.getInstance().collection("PhieuKham").document(lichHenId)
+                    .get()
+                    .addOnSuccessListener(document -> {
+                        if (document.exists()) {
+                            // Hiển thị khung bệnh án
+                            layoutKetQuaKham.setVisibility(View.VISIBLE);
+
+                            // Đổ dữ liệu từ Document PhieuKham vào View
+                            txtUserTenBacSi.setText("Bác sĩ phụ trách: " + safeText(document.getString("tenBacSi")));
+                            txtUserChanDoan.setText("Chẩn đoán: " + safeText(document.getString("ketLuan")));
+
+                            String donThuoc = document.getString("donThuoc");
+                            if (donThuoc != null && !donThuoc.trim().isEmpty()) {
+                                txtUserDonThuoc.setText("Đơn thuốc & Dặn dò:\n" + donThuoc);
+                            } else {
+                                txtUserDonThuoc.setText("Đơn thuốc & Dặn dò: Không có");
+                            }
+                        } else {
+                            layoutKetQuaKham.setVisibility(View.GONE);
+                        }
+                    })
+                    .addOnFailureListener(e -> layoutKetQuaKham.setVisibility(View.GONE));
+        } else {
+            // Nếu chưa khám xong thì giấu khung này đi
+            layoutKetQuaKham.setVisibility(View.GONE);
+        }
     }
 
     /*

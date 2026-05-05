@@ -243,38 +243,100 @@
     </ScrollView>
 
     <LinearLayout
+        android:id="@+id/layoutActionButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="16dp"
         android:background="@android:color/white"
-        android:elevation="8dp">
+        android:elevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
+        <!-- Group 1 -->
+        <LinearLayout
+            android:id="@+id/layoutDuyetHuy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <!-- TỪ CHỐI -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTuChoi"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Từ chối"
+                android:textAllCaps="false"
+                android:textColor="#D32F2F"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="12dp"
+                app:strokeColor="#D32F2F"
+                app:strokeWidth="2dp" />
+
+            <!-- XÁC NHẬN -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnXacNhan"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Duyệt lịch"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                app:backgroundTint="#4CAF50"
+                app:cornerRadius="12dp" />
+
+        </LinearLayout>
+
+        <!-- Group 2 -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnReject"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
+            android:id="@+id/btnBatDauThucHien"
+            android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:text="Từ chối"
-            android:textColor="#D32F2F"
-            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:text="KHÁCH ĐÃ ĐẾN - BẮT ĐẦU THỰC HIỆN"
+            android:textAllCaps="false"
+            android:textSize="15sp"
             android:textStyle="bold"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#FF9800"
             app:cornerRadius="12dp"
-            app:strokeColor="#D32F2F" />
+            android:visibility="gone"/>
+
+        <!-- Group 3 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCapNhatBenhAn"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="12dp"
+            android:text="CẬP NHẬT BỆNH ÁN &amp; HOÀN TẤT"
+            android:textAllCaps="false"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#2E64FE"
+            app:cornerRadius="12dp"
+            android:visibility="gone"/>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnApprove"
-            android:layout_width="0dp"
+            android:id="@+id/btnHoanTatNhanh"
+            android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:text="Duyệt lịch"
-            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:text="XÁC NHẬN HOÀN TẤT DỊCH VỤ"
+            android:textAllCaps="false"
+            android:textSize="15sp"
             android:textStyle="bold"
+            android:textColor="@android:color/white"
             app:backgroundTint="#4CAF50"
-            app:cornerRadius="12dp" />
-    </LinearLayout>
+            app:cornerRadius="12dp"
+            android:visibility="gone"/>
 
+    </LinearLayout>
 </LinearLayout>

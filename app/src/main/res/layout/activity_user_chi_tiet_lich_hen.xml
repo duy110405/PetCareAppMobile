@@ -41,6 +41,49 @@
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
+    <!-- Khối hiển thị Kết quả khám (Chỉ hiện khi trạng thái là Hoàn thành) -->
+    <LinearLayout
+        android:id="@+id/layoutKetQuaKham"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp"
+        android:padding="16dp"
+        android:background="@drawable/bg_card"
+        android:visibility="gone"> <!-- Mặc định ẩn -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="KẾT QUẢ KHÁM &amp; ĐIỀU TRỊ"
+            android:textStyle="bold"
+            android:textColor="#4CAF50"
+            android:textSize="16sp"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:id="@+id/txtUserTenBacSi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bác sĩ phụ trách: ..."
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/txtUserChanDoan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chẩn đoán: ..."
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/txtUserDonThuoc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Đơn thuốc &amp; Dặn dò: ..."
+            android:textColor="#333333"/>
+    </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBack"
@@ -49,5 +92,7 @@
         android:text="Quay lại"
         android:layout_marginTop="24dp"
         app:backgroundTint="#9E9E9E"/>
+
+
 
 </LinearLayout>

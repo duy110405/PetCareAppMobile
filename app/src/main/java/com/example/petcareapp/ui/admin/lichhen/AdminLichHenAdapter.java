@@ -253,23 +253,20 @@ public class AdminLichHenAdapter
     ) {
         switch (status) {
             case "Chờ duyệt":
-                holder.txtStatus.setTextColor(
-                        Color.parseColor("#FFA000")
-                );
+                holder.txtStatus.setTextColor(Color.parseColor("#FFA000")); // Cam
                 break;
-
             case "Đã xác nhận":
-                holder.txtStatus.setTextColor(
-                        Color.parseColor("#4CAF50")
-                );
+                holder.txtStatus.setTextColor(Color.parseColor("#4CAF50")); // Xanh lá
                 break;
-
+            case "Đang khám":
+                holder.txtStatus.setTextColor(Color.parseColor("#2E64FE")); // Xanh dương
+                break;
+            case "Hoàn thành":
+                holder.txtStatus.setTextColor(Color.parseColor("#8E24AA")); // Tím
+                break;
             case "Đã hủy":
-                holder.txtStatus.setTextColor(
-                        Color.parseColor("#9E9E9E")
-                );
+                holder.txtStatus.setTextColor(Color.parseColor("#9E9E9E")); // Xám
                 break;
-
             default:
                 holder.txtStatus.setTextColor(Color.BLACK);
                 break;

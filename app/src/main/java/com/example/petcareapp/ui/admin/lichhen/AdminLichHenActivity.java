@@ -86,7 +86,12 @@ public class AdminLichHenActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
         MenuAdmin.setup(this, bottomNav);
     }
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Gọi lại hàm tải dữ liệu để làm mới danh sách
+        loadAppointments();
+    }
     /**
      * Thu gọn phần filter sau khi người dùng áp dụng bộ lọc.
      */
