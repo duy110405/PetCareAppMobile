@@ -25,7 +25,6 @@ public class ANguoiDungActivity extends AppCompatActivity {
     private RecyclerView rvUsers;
     private TextView tvUserCount;
     private EditText edtSearch;
-
     private List<User> userList = new ArrayList<>();
     private List<User> filteredList = new ArrayList<>();
 
@@ -70,6 +69,7 @@ public class ANguoiDungActivity extends AppCompatActivity {
 
     private void loadUsers() {
         db.collection("users")
+                .whereEqualTo("role", "user") // 🔥 chỉ lấy user
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
 

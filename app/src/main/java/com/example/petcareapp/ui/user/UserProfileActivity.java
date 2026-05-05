@@ -1,16 +1,20 @@
 package com.example.petcareapp.ui.user;
 
+import android.Manifest;
+import android.app.DatePickerDialog;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Base64;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.*;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petcareapp.R;
@@ -24,13 +28,15 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private EditText edtUsername, edtEmail, edtPhone, edtPetCount;
     private ImageView imgAvatar, btnBack;
-    private Button btnEdit, btnGallery , btnDoiVoucher;
+    private Button btnEdit, btnGallery, btnCamera, btnDoiVoucher;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
     private String currentUserId;
     private boolean isEditing = false;
+
+    private Uri cameraImageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,7 @@ public class UserProfileActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         btnEdit = findViewById(R.id.btnEdit);
         btnGallery = findViewById(R.id.btnGallery);
+        btnCamera = findViewById(R.id.btnCamera);
         btnDoiVoucher = findViewById(R.id.btnDoiVoucher);
 
         // ===== FIREBASE =====
@@ -61,19 +68,22 @@ public class UserProfileActivity extends AppCompatActivity {
             finish();
         }
 
-        // ===== DISABLE EDIT =====
         setEditable(false);
 
         // ===== BACK =====
         btnBack.setOnClickListener(v -> {
-            android.content.Intent intent = new android.content.Intent(v.getContext(), UCaiDatActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, UCaiDatActivity.class));
         });
 
-        // ===== CHỌN ẢNH =====
-        btnGallery.setOnClickListener(v -> openGallery());
+        // ===== GALLERY =====
+        btnGallery.setOnClickListener(v -> galleryLauncher.launch("image/*"));
 
-        // ===== SỬA / LƯU =====
+        // ===== CAMERA =====
+        btnCamera.setOnClickListener(v ->
+                requestCameraPermission.launch(Manifest.permission.CAMERA)
+        );
+
+        // ===== EDIT =====
         btnEdit.setOnClickListener(v -> {
             if (!isEditing) {
                 isEditing = true;
@@ -83,45 +93,37 @@ public class UserProfileActivity extends AppCompatActivity {
                 updateUser();
             }
         });
-        btnDoiVoucher.setOnClickListener(v -> {
-            android.content.Intent intent = new android.content.Intent(v.getContext(), UVoucherActivity.class);
-            startActivity(intent);
-        });
+
+        btnDoiVoucher.setOnClickListener(v ->
+                startActivity(new Intent(this, UVoucherActivity.class))
+        );
     }
 
     // ================= LOAD DATA =================
     private void loadUserData() {
         db.collection("users").document(currentUserId)
                 .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        edtUsername.setText(doc.getString("username"));
+                        edtEmail.setText(doc.getString("email"));
+                        edtPhone.setText(doc.getString("phone"));
 
-                        edtUsername.setText(documentSnapshot.getString("username"));
-                        edtEmail.setText(documentSnapshot.getString("email"));
-                        edtPhone.setText(documentSnapshot.getString("phone"));
-
-                        Long petCount = documentSnapshot.getLong("petCount");
+                        Long petCount = doc.getLong("petCount");
                         edtPetCount.setText(petCount != null ? String.valueOf(petCount) : "0");
 
-                        // ===== LOAD AVATAR BASE64 =====
-                        String base64Image = documentSnapshot.getString("avatarBase64");
-
-                        if (base64Image != null && !base64Image.isEmpty()) {
-                            Bitmap bitmap = decodeBase64(base64Image);
-                            imgAvatar.setImageBitmap(bitmap);
+                        String base64 = doc.getString("avatarBase64");
+                        if (base64 != null && !base64.isEmpty()) {
+                            imgAvatar.setImageBitmap(decodeBase64(base64));
                         }
                     }
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                );
+                });
     }
 
-    // ================= ENABLE/DISABLE EDIT =================
+    // ================= EDIT ENABLE =================
     private void setEditable(boolean enable) {
         edtUsername.setEnabled(enable);
         edtPhone.setEnabled(enable);
-
         edtEmail.setEnabled(false);
         edtPetCount.setEnabled(false);
     }
@@ -131,89 +133,86 @@ public class UserProfileActivity extends AppCompatActivity {
         String username = edtUsername.getText().toString().trim();
         String phone = edtPhone.getText().toString().trim();
 
-        if (username.isEmpty()) {
+        if (TextUtils.isEmpty(username)) {
             edtUsername.setError("Không được để trống");
             return;
         }
 
         db.collection("users").document(currentUserId)
-                .update(
-                        "username", username,
-                        "phone", phone
-                )
+                .update("username", username, "phone", phone)
                 .addOnSuccessListener(unused -> {
                     Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
-
                     isEditing = false;
                     setEditable(false);
                     btnEdit.setText("Sửa");
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                );
+                });
     }
 
-    // ================= MỞ GALLERY =================
-    private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        startActivityForResult(intent, 100);
+    // ================= GALLERY =================
+    private final ActivityResultLauncher<String> galleryLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    imgAvatar.setImageURI(uri);
+                    saveAvatar(encodeImage(uri));
+                }
+            });
+
+    // ================= CAMERA =================
+    private final ActivityResultLauncher<Uri> cameraLauncher =
+            registerForActivityResult(new ActivityResultContracts.TakePicture(), result -> {
+                if (result) {
+                    imgAvatar.setImageURI(cameraImageUri);
+                    saveAvatar(encodeImage(cameraImageUri));
+                }
+            });
+
+    private final ActivityResultLauncher<String> requestCameraPermission =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) openCamera();
+                else Toast.makeText(this, "Cần cấp quyền camera", Toast.LENGTH_SHORT).show();
+            });
+
+    private void openCamera() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "avatar");
+
+        cameraImageUri = getContentResolver().insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
+        );
+
+        cameraLauncher.launch(cameraImageUri);
     }
 
-    // ================= CHỌN ẢNH =================
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
-            Uri imageUri = data.getData();
-
-            // preview
-            imgAvatar.setImageURI(imageUri);
-
-            // convert + lưu luôn
-            String base64 = encodeImage(imageUri);
-            if (base64 != null) {
-                saveAvatar(base64);
-            }
-        }
-    }
-
-    // ================= ENCODE BASE64 =================
+    // ================= ENCODE =================
     private String encodeImage(Uri uri) {
         try {
-            InputStream inputStream = getContentResolver().openInputStream(uri);
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            InputStream is = getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(is);
 
-            // resize
             bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
 
-            byte[] bytes = baos.toByteArray();
-
-            return Base64.encodeToString(bytes, Base64.DEFAULT);
+            return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
 
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }
 
     // ================= SAVE AVATAR =================
     private void saveAvatar(String base64) {
+        if (base64 == null) return;
+
         db.collection("users").document(currentUserId)
                 .update("avatarBase64", base64)
                 .addOnSuccessListener(unused ->
-                        Toast.makeText(this, "Cập nhật avatar", Toast.LENGTH_SHORT).show()
-                )
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Đã cập nhật avatar", Toast.LENGTH_SHORT).show()
                 );
     }
 
-    // ================= DECODE BASE64 =================
+    // ================= DECODE =================
     private Bitmap decodeBase64(String base64) {
         byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);

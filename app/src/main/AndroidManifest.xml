@@ -48,7 +48,7 @@
         <activity
             android:name=".ui.admin.lichhen.AdminLichHenActivity" />
         <activity android:name=".ui.auth.DangKyActivity"/>
-        <activity android:name=".ui.main.MainActivity"/>
+        <activity android:name=".ui.auth.DangNhapActivity"/>
         <activity android:name=".ui.admin.AChiNhanhActivity"/>
         <activity android:name=".ui.admin.ADichVuActivity"/>
         <activity android:name=".ui.admin.AVoucherActivity"/>
@@ -78,7 +78,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.auth.DangNhapActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

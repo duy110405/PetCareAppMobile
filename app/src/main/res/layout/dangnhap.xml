@@ -66,8 +66,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Tên đăng nhập"
                     android:inputType="text"
-                    android:textSize="14sp"
-                    android:text = "ltqh@gmail.com"/>
+                    android:textSize="14sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -87,8 +86,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Mật khẩu"
                     android:inputType="textPassword"
-                    android:textSize="14sp"
-                    android:text = "ltqh455"/>
+                    android:textSize="14sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
