@@ -2,122 +2,152 @@ package com.example.petcareapp.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Handler;
-import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
+import android.os.Handler;
+import android.os.Looper;
+
 public class LightSensorHelper implements SensorEventListener {
 
-    private SensorManager sensorManager;
-    private Sensor lightSensor;
+    private final SensorManager sensorManager;
+    private final Sensor lightSensor;
+    private final SharedPreferences prefs;
 
-    // Trạng thái hiện tại
     private boolean isDarkMode;
+    private boolean isRegistered = false;
 
-    private SharedPreferences prefs;
     private static final String PREF_NAME = "AppThemeSettings";
     private static final String KEY_AUTO_THEME = "auto_theme_enabled";
 
-    // Handler để xử lý đệm thời gian (Debounce) - Chống chớp nháy
-    private Handler handler = new Handler(Looper.getMainLooper());
-    private Runnable themeSwitchRunnable;
+    private static final float DARK_THRESHOLD = 15f;
+    private static final float LIGHT_THRESHOLD = 30f;
+    private static final long DEBOUNCE_DELAY = 1200;
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable pendingRunnable;
 
     public LightSensorHelper(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        if (sensorManager != null) {
-            lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        }
+        lightSensor = sensorManager != null
+                ? sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+                : null;
 
-        // Lấy trạng thái theme hiện tại của App
-        int currentMode = AppCompatDelegate.getDefaultNightMode();
-        isDarkMode = (currentMode == AppCompatDelegate.MODE_NIGHT_YES);
         prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+
+        // Lấy trạng thái theme THỰC TẾ (không dùng AppCompatDelegate)
+        int nightMode = context.getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+
+        isDarkMode = (nightMode == Configuration.UI_MODE_NIGHT_YES);
     }
 
+    // ========================
+    // Lifecycle
+    // ========================
+
     public void register() {
-        // Chỉ bật cảm biến nếu người dùng đã tích chọn "Bật" trong Cài đặt
-        if (lightSensor != null && isAutoThemeEnabled()) {
+        if (!isRegistered && sensorManager != null && lightSensor != null && isAutoThemeEnabled()) {
             sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            isRegistered = true;
         }
     }
 
     public void unregister() {
-        if (lightSensor != null) {
-            // Hủy lắng nghe khi tắt app để tiết kiệm pin
+        if (isRegistered && sensorManager != null) {
             sensorManager.unregisterListener(this);
+            isRegistered = false;
         }
-        if (handler != null && themeSwitchRunnable != null) {
-            handler.removeCallbacks(themeSwitchRunnable);
-        }
+
+        clearPendingTask();
     }
+
+    // ========================
+    // Sensor callback
+    // ========================
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
-            float lux = event.values[0];
+        if (event.sensor.getType() != Sensor.TYPE_LIGHT) return;
 
-            // Logic xác định môi trường sáng/tối
-            // Dưới 15 lux: Tối -> Bật Dark Mode
-            // Trên 30 lux: Sáng -> Bật Light Mode
-            // Khoảng 15-30: Vùng đệm giúp không bị nháy qua lại khi ánh sáng lập lờ
+        float lux = event.values[0];
 
-            boolean shouldBeDark = lux < 15.0f;
-            boolean shouldBeLight = lux > 30.0f;
+        boolean shouldDark = lux < DARK_THRESHOLD;
+        boolean shouldLight = lux > LIGHT_THRESHOLD;
 
-            if (shouldBeDark && !isDarkMode) {
-                scheduleThemeChange(true);
-            } else if (shouldBeLight && isDarkMode) {
-                scheduleThemeChange(false);
-            }
+        if (shouldDark && !isDarkMode) {
+            scheduleThemeChange(true);
+        } else if (shouldLight && isDarkMode) {
+            scheduleThemeChange(false);
         }
-    }
-
-    private void scheduleThemeChange(boolean toDarkMode) {
-        // Hủy bỏ lệnh chuyển theme trước đó nếu có (để tính lại thời gian)
-        if (themeSwitchRunnable != null) {
-            handler.removeCallbacks(themeSwitchRunnable);
-        }
-
-        themeSwitchRunnable = () -> {
-            isDarkMode = toDarkMode;
-            if (toDarkMode) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
-        };
-
-        // Đợi 1200ms (1.2s) - Thỏa mãn điều kiện chuyển đổi mượt mà < 1.5s của đồ án
-        // Nếu độ sáng duy trì ổn định trong 1.2s thì mới quyết định đổi theme
-        handler.postDelayed(themeSwitchRunnable, 1200);
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Không cần xử lý
+        // ignore
     }
 
-    // 1. Kiểm tra xem người dùng có đang bật chế độ Tự động không
-    public boolean isAutoThemeEnabled() {
-        return prefs.getBoolean(KEY_AUTO_THEME, false); // Mặc định là TẮT (false)
+    // ========================
+    // Core logic
+    // ========================
+
+    private void scheduleThemeChange(boolean toDarkMode) {
+        clearPendingTask();
+
+        pendingRunnable = () -> {
+            if (isDarkMode == toDarkMode) return;
+
+            isDarkMode = toDarkMode;
+
+            AppCompatDelegate.setDefaultNightMode(
+                    toDarkMode
+                            ? AppCompatDelegate.MODE_NIGHT_YES
+                            : AppCompatDelegate.MODE_NIGHT_NO
+            );
+        };
+
+        handler.postDelayed(pendingRunnable, DEBOUNCE_DELAY);
     }
 
-    // 2. Lưu cài đặt Bật/Tắt của người dùng
-    public void setAutoThemeEnabled(boolean isEnabled) {
-        prefs.edit().putBoolean(KEY_AUTO_THEME, isEnabled).apply();
-
-        // Nếu người dùng tắt chế độ tự động, lập tức hủy cảm biến
-        if (!isEnabled) {
-            unregister();
-        } else {
-            register();
+    private void clearPendingTask() {
+        if (pendingRunnable != null) {
+            handler.removeCallbacks(pendingRunnable);
+            pendingRunnable = null;
         }
     }
 
+    // ========================
+    // Preferences
+    // ========================
 
+    public boolean isAutoThemeEnabled() {
+        return prefs.getBoolean(KEY_AUTO_THEME, false);
+    }
+
+    public void setAutoThemeEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_AUTO_THEME, enabled).apply();
+
+        if (enabled) {
+            register();
+        } else {
+            unregister();
+        }
+    }
+
+    // ========================
+    // Optional: debug helper
+    // ========================
+
+    public boolean isRegistered() {
+        return isRegistered;
+    }
+
+    public boolean isDarkMode() {
+        return isDarkMode;
+    }
 }
