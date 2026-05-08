@@ -1,50 +1,39 @@
 package com.example.petcareapp.ui.user.Pet;
 
-import android.Manifest;
 import android.app.DatePickerDialog;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
+import android.text.TextUtils;
+import android.util.Base64;
+import android.widget.*;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petcareapp.R;
 import com.example.petcareapp.data.model.Pet;
-import com.example.petcareapp.utils.MenuUser;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.petcareapp.ui.user.UCaiDatActivity;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import com.google.firebase.firestore.FieldValue;
-
+import java.util.*;
 
 public class AddPetActivity extends AppCompatActivity {
+
     private EditText edtName, edtBreed, edtDob, edtWeight, edtColor;
-    private Button btnSubmit, btnCancel;
-
+    private Button btnSubmit, btnCancel, btnUploadPhoto, btnBack;
     private ImageView imgAvatar;
-    private Button btnCapturePhoto, btnUploadPhoto;
-
-    private FirebaseFirestore db;
 
     private Uri imageUri;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,143 +51,79 @@ public class AddPetActivity extends AppCompatActivity {
 
         btnSubmit = findViewById(R.id.btnAddPetSubmit);
         btnCancel = findViewById(R.id.btnCancel);
+        btnUploadPhoto = findViewById(R.id.btnUploadPhoto);
+        btnBack = findViewById(R.id.btnBack);
+
+        // ===== BACK =====
+        btnBack.setOnClickListener(v -> {
+            startActivity(new Intent(this, UCaiDatActivity.class));
+        });
 
         imgAvatar = findViewById(R.id.imgAvatar);
-        btnCapturePhoto = findViewById(R.id.btnCapturePhoto);
-        btnUploadPhoto = findViewById(R.id.btnUploadPhoto);
 
-        // ===================== CHỌN ẢNH TỪ GALLERY =====================
-        btnUploadPhoto.setOnClickListener(v -> {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
+        // ===== CHỌN ẢNH =====
+        btnUploadPhoto.setOnClickListener(v -> galleryLauncher.launch("image/*"));
 
-                requestPermissions(new String[]{
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                }, 1);
-
-            } else {
-                galleryLauncher.launch("image/*");
-            }
-        });
-
-        // ===================== CHỤP ẢNH =====================
-        btnCapturePhoto.setOnClickListener(v -> {
-            if (checkSelfPermission(Manifest.permission.CAMERA)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                requestPermissions(new String[]{
-                        Manifest.permission.CAMERA
-                }, 2);
-
-            } else {
-                imageUri = createImageUri();
-                cameraLauncher.launch(imageUri);
-            }
-        });
-
-        // ===================== DATE PICKER =====================
-        edtDob.setOnClickListener(v -> {
-            Calendar calendar = Calendar.getInstance();
-
-            DatePickerDialog dialog = new DatePickerDialog(this,
-                    (view, y, m, d) -> {
-                        String date = d + "/" + (m + 1) + "/" + y;
-                        edtDob.setText(date);
-                    },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH));
-            //  chặn ngày tương lai
-            dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-            dialog.show();
-
-        });
+        // ===== DATE PICKER =====
+        edtDob.setOnClickListener(v -> showDatePicker());
 
         btnSubmit.setOnClickListener(v -> addPet());
         btnCancel.setOnClickListener(v -> finish());
     }
 
-    // ===================== CAMERA RESULT =====================
-    private final ActivityResultLauncher<Uri> cameraLauncher =
-            registerForActivityResult(new ActivityResultContracts.TakePicture(), result -> {
-                if (result) {
-                    imgAvatar.setImageURI(imageUri);
-                }
-            });
-
-    // ===================== GALLERY RESULT =====================
+    // ===================== GALLERY =====================
     private final ActivityResultLauncher<String> galleryLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
-
-                    // giữ quyền truy cập URI
-                    final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
-                    try {
-                        getContentResolver().takePersistableUriPermission(uri, takeFlags);
-                    } catch (Exception ignored) {}
-
                     imageUri = uri;
                     imgAvatar.setImageURI(uri);
                 }
             });
 
-    // ===================== CREATE IMAGE URI =====================
-    private Uri createImageUri() {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "pet_image");
-        values.put(MediaStore.Images.Media.DESCRIPTION, "from camera");
+    // ===================== DATE PICKER =====================
+    private void showDatePicker() {
+        Calendar calendar = Calendar.getInstance();
 
-        return getContentResolver().insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                values
-        );
+        DatePickerDialog dialog = new DatePickerDialog(this,
+                (view, y, m, d) -> edtDob.setText(d + "/" + (m + 1) + "/" + y),
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
+
+        dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        dialog.show();
     }
 
-    // ===================== PERMISSION RESULT =====================
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-            if (requestCode == 1) {
-                galleryLauncher.launch("image/*");
-            }
-
-            if (requestCode == 2) {
-                imageUri = createImageUri();
-                cameraLauncher.launch(imageUri);
-            }
-
-        } else {
-            Toast.makeText(this, "Bạn cần cấp quyền", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private Bitmap uriToBitmap(Uri uri) {
+    // ===================== NÉN ẢNH =====================
+    private String compressAndEncodeImage(Uri uri) {
         try {
-            Bitmap original = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
 
-            // THU NHỎ ẢNH ĐỂ TRÁNH LỖI 1MB CỦA FIRESTORE
-            int maxWidth = 400; // Chiều rộng tối đa 400px (Đủ nét cho Avatar)
-            int maxHeight = (int) ((double) original.getHeight() / original.getWidth() * maxWidth);
+            // resize nhỏ lại
+            int maxWidth = 300;
+            int maxHeight = (int) ((double) bitmap.getHeight() / bitmap.getWidth() * maxWidth);
 
-            return Bitmap.createScaledBitmap(original, maxWidth, maxHeight, true);
+            Bitmap resized = Bitmap.createScaledBitmap(bitmap, maxWidth, maxHeight, true);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            // giảm chất lượng xuống 60%
+            resized.compress(Bitmap.CompressFormat.JPEG, 60, baos);
+
+            byte[] bytes = baos.toByteArray();
+
+            // check size (~1MB = 1048576 bytes)
+            if (bytes.length > 900000) {
+                Toast.makeText(this, "Ảnh quá lớn, chọn ảnh khác", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+
+            return Base64.encodeToString(bytes, Base64.DEFAULT);
+
         } catch (Exception e) {
             return null;
         }
     }
-
-    private String encodeToBase64(Bitmap bitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
-        byte[] bytes = baos.toByteArray();
-        return android.util.Base64.encodeToString(bytes, android.util.Base64.DEFAULT);
-    }
-
-
 
     // ===================== ADD PET =====================
     private void addPet() {
@@ -209,74 +134,67 @@ public class AddPetActivity extends AppCompatActivity {
         String color = edtColor.getText().toString().trim();
         String dobStr = edtDob.getText().toString().trim();
 
-        // validate
-        if (name.isEmpty()) {
+        // ===== VALIDATE =====
+        if (TextUtils.isEmpty(name)) {
             edtName.setError("Nhập tên thú cưng");
             return;
         }
 
-        if (breed.isEmpty()) {
+        if (TextUtils.isEmpty(breed)) {
             edtBreed.setError("Nhập giống");
             return;
         }
 
-        if (dobStr.isEmpty()) {
+        if (TextUtils.isEmpty(dobStr)) {
             edtDob.setError("Chọn ngày sinh");
             return;
         }
 
         if (imageUri == null) {
-            Toast.makeText(this, "Vui lòng chọn ảnh", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Chọn ảnh", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // parse dob
+        // ===== DATE =====
         Timestamp dob;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             Date date = sdf.parse(dobStr);
 
             if (date.after(new Date())) {
-                Toast.makeText(this, "Ngày sinh không được ở tương lai", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Ngày sinh không hợp lệ", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             dob = new Timestamp(date);
         } catch (Exception e) {
-            Toast.makeText(this, "Ngày không hợp lệ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Ngày lỗi", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // parse weight
+        // ===== WEIGHT =====
         double weight = 0;
         try {
-            if (!weightStr.isEmpty()) {
+            if (!TextUtils.isEmpty(weightStr)) {
                 weight = Double.parseDouble(weightStr);
             }
         } catch (Exception e) {
-            edtWeight.setError("Cân nặng không hợp lệ");
+            edtWeight.setError("Sai cân nặng");
             return;
         }
+
+        // ===== IMAGE BASE64 =====
+        String base64Image = compressAndEncodeImage(imageUri);
+        if (base64Image == null) return;
 
         String userId = FirebaseAuth.getInstance().getUid();
         if (userId == null) return;
 
-        // tạo petId
         String petId = db.collection("users")
                 .document(userId)
                 .collection("pets")
                 .document()
                 .getId();
-
-        Bitmap bitmap = uriToBitmap(imageUri);
-
-        if (bitmap == null) {
-            Toast.makeText(this, "Không đọc được ảnh", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String base64Image = encodeToBase64(bitmap);
-
 
         Pet pet = new Pet(
                 petId,
@@ -297,7 +215,6 @@ public class AddPetActivity extends AppCompatActivity {
                 .set(pet)
                 .addOnSuccessListener(unused -> {
 
-                    // 🔥 CẬP NHẬT PET COUNT
                     db.collection("users")
                             .document(userId)
                             .update("petCount", FieldValue.increment(1));
