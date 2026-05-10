@@ -1,7 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="blue">#82b4ff</color>
-    <color name="nav_item_color">#FF000000</color>
+    <!-- Base -->
+    <color name="primary">#2E64FE</color>
+    <color name="primary_variant">#6495ED</color>
+    <!-- BRAND -->
+    <color name="pet_primary">#4E84FB</color>
+    <color name="pet_secondary">#63D3E9</color>
+
+    <!-- BACKGROUND -->
+    <color name="background">#F5F5F5</color>
+    <color name="colorBackground">#F5F5F5</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F9F9F9</color>
+
+    <!-- TEXT -->
+    <color name="text_primary">#111111</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <!-- BORDER -->
+    <color name="border">#DDDDDD</color>
+
+    <!-- SUCCESS -->
+    <color name="success">#4CAF50</color>
+    <color name="success_bg">#E8F5E9</color>
+
+    <!-- ERROR -->
+    <color name="error">#FF5F54</color>
+    <color name="error_bg">#FFECEC</color>
+    <color name="error_border">#FFCDD2</color>
+    <!-- State -->
+    <color name="danger">#E53935</color>
+    <!-- CARD -->
+    <color name="card_surface">#FFFFFF</color>
+    <!-- Navigation -->
+    <color name="nav_item_color">#212121</color>
+    <color name="gradient_start">#8E2DE2</color>
+    <color name="gradient_end">#4A00E0</color>
 </resources>

@@ -117,7 +117,7 @@ public class ThemChuongBaoActivity extends AppCompatActivity {
         if (selectedType.equals("Hằng ngày")) {
 
             btnDaily.setBackgroundTintList(
-                    android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.blue))
+                    android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.success))
             );
             btnDaily.setTextColor(getResources().getColor(android.R.color.white));
 
@@ -129,7 +129,7 @@ public class ThemChuongBaoActivity extends AppCompatActivity {
         } else {
 
             btnOnce.setBackgroundTintList(
-                    android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.blue))
+                    android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.success))
             );
             btnOnce.setTextColor(getResources().getColor(android.R.color.white));
 

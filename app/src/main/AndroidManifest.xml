@@ -20,6 +20,7 @@
         android:name="android.hardware.camera"
         android:required="false" />
     <application
+        android:name=".ui.user.PetCareApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -78,15 +79,18 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".ui.main.MainActivity"/>
+
+        <activity
+            android:name=".ui.main.SplashActivity"
             android:exported="true">
+
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
-
-
 
 
 
