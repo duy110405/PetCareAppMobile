@@ -12,6 +12,9 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,6 +53,7 @@ public class AddLichHenActivity extends AppCompatActivity {
     private TextInputEditText edtNotes, edtSelectDate;
     private MaterialButton btnCancel, btnAddAppointmentSubmit;
     private ImageView btnBack;
+
 
     private List<Pet> petList = new ArrayList<>();
     private List<ChiNhanh> branchList = new ArrayList<>();
@@ -100,6 +104,15 @@ public class AddLichHenActivity extends AppCompatActivity {
         btnCancel = findViewById(R.id.btnCancel);
         btnAddAppointmentSubmit = findViewById(R.id.btnAddAppointmentSubmit);
         btnBack = findViewById(R.id.btnBack);
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        }
+        return false;
     }
 
     private void setupEvents() {
@@ -510,15 +523,22 @@ public class AddLichHenActivity extends AppCompatActivity {
             batch.update(db.collection("KhoVoucher").document(selectedKhoVoucher.getId()), "trangThai", "Đã dùng");
         }
 
-        // Chạy đồng thời
-        batch.commit()
-                .addOnSuccessListener(unused -> {
-                    showToast("Đặt lịch thành công!");
-                    finish();
-                })
-                .addOnFailureListener(e ->
-                        showToast("Lỗi: " + e.getMessage())
-                );
+        if (isNetworkAvailable()) {
+            // TRƯỜNG HỢP ONLINE: Chờ Firestore đẩy lên server thành công
+            batch.commit()
+                    .addOnSuccessListener(unused -> {
+                        showToast("Đặt lịch thành công!");
+                        finish();
+                    })
+                    .addOnFailureListener(e ->
+                            showToast("Lỗi: " + e.getMessage())
+                    );
+        } else {
+            // TRƯỜNG HỢP OFFLINE: Chỉ commit vào Local Cache và đóng màn hình luôn
+            batch.commit();
+            showToast("Không có mạng! Lịch hẹn đã được lưu tạm và sẽ tự đồng bộ khi có Internet.");
+            finish();
+        }
     }
 
     private void showToast(String message) {

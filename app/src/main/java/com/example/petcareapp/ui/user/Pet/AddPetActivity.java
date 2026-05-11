@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.petcareapp.R;
 import com.example.petcareapp.data.model.Pet;
+import com.example.petcareapp.ui.user.TrangChu.UTrangChuActivity;
 import com.example.petcareapp.ui.user.UCaiDatActivity;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -84,7 +85,7 @@ public class AddPetActivity extends AppCompatActivity {
 
         // ===================== BACK =====================
         btnBack.setOnClickListener(v -> {
-            startActivity(new Intent(this, UCaiDatActivity.class));
+            startActivity(new Intent(this, UTrangChuActivity.class));
         });
 
         // ===================== GALLERY =====================
