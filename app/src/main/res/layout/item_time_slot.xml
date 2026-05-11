@@ -6,10 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="40dp"
     android:layout_margin="4dp"
+
     app:cardBackgroundColor="@android:color/transparent"
     app:cardCornerRadius="20dp"
     app:cardElevation="0dp"
-    app:strokeColor="#E0E0E0"
+    app:strokeColor="?attr/colorOutline"
     app:strokeWidth="1dp">
 
     <TextView
@@ -17,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:textColor="#333333"
+        android:textColor="?android:textColorPrimary"
         android:textSize="13sp"
         android:textStyle="bold" />
 

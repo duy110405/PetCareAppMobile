@@ -6,10 +6,11 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="20dp"
     android:layout_marginBottom="16dp"
-    app:cardBackgroundColor="@android:color/white"
+
+    app:cardBackgroundColor="?attr/colorSurface"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:strokeColor="#E0E0E0"
+    app:strokeColor="?attr/colorOutline"
     app:strokeWidth="1dp">
 
     <LinearLayout
@@ -23,23 +24,77 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Tên chi nhánh"
-            android:textColor="#000000"
+            android:textColor="?android:textColorPrimary"
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center_vertical" android:orientation="horizontal">
-            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_location_outline" app:tint="#424242" />
-            <TextView android:id="@+id/tvDiaChiUser" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:text="Địa chỉ" android:textColor="#616161" android:textSize="13sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_location_outline"
+                app:tint="?android:textColorSecondary" />
+
+            <TextView
+                android:id="@+id/tvDiaChiUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Địa chỉ"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="13sp" />
         </LinearLayout>
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:gravity="center_vertical" android:orientation="horizontal">
-            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_phone" app:tint="#424242" />
-            <TextView android:id="@+id/tvSdtUser" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:text="SĐT" android:textColor="#616161" android:textSize="13sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_phone"
+                app:tint="?android:textColorSecondary" />
+
+            <TextView
+                android:id="@+id/tvSdtUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="SĐT"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="13sp" />
         </LinearLayout>
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:gravity="center_vertical" android:orientation="horizontal">
-            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_clock" app:tint="#424242" />
-            <TextView android:id="@+id/tvGioUser" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:text="Giờ làm" android:textColor="#616161" android:textSize="13sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_clock"
+                app:tint="?android:textColorSecondary" />
+
+            <TextView
+                android:id="@+id/tvGioUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Giờ làm"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="13sp" />
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -51,10 +106,12 @@
             android:textAllCaps="false"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:backgroundTint="#4E84FB"
+
+            app:backgroundTint="?attr/colorPrimary"
             app:cornerRadius="8dp"
             app:icon="@drawable/ic_location_outline"
             app:iconGravity="textStart" />
 
     </LinearLayout>
+
 </com.google.android.material.card.MaterialCardView>

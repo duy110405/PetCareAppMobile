@@ -5,10 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardBackgroundColor="@android:color/white"
+
+    app:cardBackgroundColor="?attr/colorSurface"
     app:cardCornerRadius="16dp"
     app:cardElevation="1dp"
-    app:strokeColor="#E0E0E0"
+    app:strokeColor="?attr/colorOutline"
     app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,11 +21,12 @@
             android:id="@+id/imgPet"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            app:cardBackgroundColor="#E0E0E0"
+            app:cardBackgroundColor="?attr/colorSurfaceVariant"
             app:cardCornerRadius="30dp"
             app:cardElevation="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
             <ImageView
                 android:id="@+id/imgAvatar"
                 android:layout_width="match_parent"
@@ -39,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Tên thú cưng"
-            android:textColor="#000000"
+            android:textColor="?android:textColorPrimary"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/imgPet"
@@ -54,6 +56,7 @@
             app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
@@ -72,7 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="Khám sức khỏe tổng quát"
-            android:textColor="#333333"
+            android:textColor="?android:textColorPrimary"
             android:textSize="13sp"
             app:layout_constraintStart_toStartOf="@id/tvPetName"
             app:layout_constraintEnd_toEndOf="parent"
@@ -84,19 +87,22 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="10:00 , 15 thg 5"
-            android:textColor="#757575"
+            android:textColor="?android:textColorSecondary"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="@id/tvPetName"
             app:layout_constraintTop_toBottomOf="@id/tvService" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancelAppointment"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
+            android:layout_marginTop="8dp"
             android:text="Hủy lịch"
             android:textAllCaps="false"
             android:textSize="12sp"
             app:layout_constraintTop_toBottomOf="@id/tvTime"
-            app:layout_constraintStart_toStartOf="@id/tvTime"
-            android:layout_marginTop="8dp"/>
+            app:layout_constraintStart_toStartOf="@id/tvTime" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </com.google.android.material.card.MaterialCardView>

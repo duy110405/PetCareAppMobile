@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D6F4FA"
+    android:background="@color/background"
     tools:context=".ui.auth.DangNhapActivity">
 
     <TextView
@@ -14,24 +14,22 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
         android:text="ĐĂNG NHẬP"
-        android:textColor="#000000"
+        android:textColor="@color/text_primary"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="32dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="8dp"
+        style="@style/PetCare.Card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvLoginTitle">
+        app:layout_constraintTop_toBottomOf="@id/tvLoginTitle">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,19 +43,14 @@
                 android:layout_marginBottom="24dp"
                 android:gravity="center"
                 android:text="Pet Care"
-                android:textColor="#0097A7"
+                android:textColor="@color/primary"
                 android:textSize="26sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/PetCare.Input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxCornerRadiusBottomEnd="16dp"
-                app:boxCornerRadiusBottomStart="16dp"
-                app:boxCornerRadiusTopEnd="16dp"
-                app:boxCornerRadiusTopStart="16dp"
-                app:boxStrokeColor="#BDBDBD"
                 android:layout_marginBottom="16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -70,15 +63,10 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/PetCare.Input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxCornerRadiusBottomEnd="16dp"
-                app:boxCornerRadiusBottomStart="16dp"
-                app:boxCornerRadiusTopEnd="16dp"
-                app:boxCornerRadiusTopStart="16dp"
-                app:boxStrokeColor="#BDBDBD"
-                app:passwordToggleEnabled="true">
+                app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtPassword"
@@ -96,12 +84,13 @@
                 android:layout_marginTop="8dp"
                 android:gravity="end"
                 android:text="Quên mật khẩu?"
-                android:textColor="#000000"
+                android:textColor="@color/text_primary"
                 android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogin"
+                style="@style/PetCare.Button.Primary"
                 android:layout_width="180dp"
                 android:layout_height="55dp"
                 android:layout_gravity="center"
@@ -109,9 +98,7 @@
                 android:text="Đăng nhập"
                 android:textAllCaps="false"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                app:backgroundTint="#63D3E9"
-                app:cornerRadius="24dp" />
+                android:textStyle="bold"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -125,37 +112,37 @@
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_weight="1"
-                    android:background="#BDBDBD" />
+                    android:background="@color/border"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="8dp"
                     android:text="hoặc"
-                    android:textColor="#757575"
-                    android:textSize="12sp" />
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"/>
 
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_weight="1"
-                    android:background="#BDBDBD" />
+                    android:background="@color/border"/>
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGoogleLogin"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:text="SỬ DỤNG TÀI KHOẢN GOOGLE"
-                android:textColor="#424242"
+                android:textAllCaps="false"
+                android:textColor="@color/text_primary"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 app:cornerRadius="24dp"
                 app:icon="@drawable/ic_google"
                 app:iconGravity="textStart"
-                app:iconPadding="8dp"
-                app:strokeColor="@android:color/transparent" />
+                app:iconPadding="8dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -168,20 +155,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Chưa có tài khoản? "
-                    android:textColor="#757575"
-                    android:textSize="12sp" />
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"/>
 
                 <TextView
                     android:id="@+id/tvRegister"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Đăng ký ngay"
-                    android:textColor="#4C8BF5"
+                    android:textColor="@color/primary"
                     android:textSize="12sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"/>
             </LinearLayout>
 
         </LinearLayout>
+
     </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

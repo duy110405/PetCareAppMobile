@@ -1,9 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.PetCareApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+    <!-- Theme chính -->
+    <style
+        name="Theme.PetCareApp"
+        parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- Primary -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryContainer">@color/primary_variant</item>
+
+        <!-- Background -->
+        <item name="android:windowBackground">@color/background</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/primary</item>
+        <!-- màu chính -->
+
+
+        <!-- giúp mượt chuyển theme -->
+        <item name="android:windowIsTranslucent">false</item>
     </style>
 
-    <style name="Theme.PetCareApp" parent="Base.Theme.PetCareApp" />
 </resources>

@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/background">
 
+    <!-- HEADER -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#2E64FE"
+        android:background="@color/primary"
+        android:elevation="4dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="20dp"
-        android:elevation="4dp">
+        android:padding="20dp">
 
         <ImageView
             android:id="@+id/btnBack"
@@ -30,14 +32,16 @@
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
+
     </LinearLayout>
 
+    <!-- CONTENT -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="16dp"
         android:clipToPadding="false"
+        android:padding="16dp"
         android:paddingBottom="24dp">
 
         <LinearLayout
@@ -45,28 +49,28 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- STATUS -->
             <TextView
                 android:id="@+id/txtStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Chờ duyệt"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_status_green"
                 android:gravity="center"
                 android:padding="10dp"
-                android:textStyle="bold"
-                android:textColor="#F57C00"
-                android:background="#FFF3E0"
+                android:text="Chờ duyệt"
+                android:textColor="@color/success"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <!-- CUSTOMER CARD -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/PetCare.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cornerRadius="8dp"/>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="1dp"
-                app:strokeColor="#EEEEEE"
-                app:strokeWidth="1dp"
-                android:layout_marginBottom="16dp">
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -77,37 +81,86 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
                         android:text="Khách hàng &amp; Thú cưng"
-                        android:textColor="#888888"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="12dp"/>
+                        android:textStyle="bold" />
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
-                        <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_person" app:tint="#2980B9"/>
-                        <TextView android:id="@+id/txtOwnerName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tên khách hàng" android:textSize="16sp" android:textStyle="bold" android:textColor="#2980B9" android:layout_marginStart="12dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_person"
+                            app:tint="@color/primary" />
+
+                        <TextView
+                            android:id="@+id/txtOwnerName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="Tên khách hàng"
+                            android:textColor="@color/primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="12dp">
-                        <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_phone" app:tint="#4CAF50"/>
-                        <TextView android:id="@+id/txtPhone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Số điện thoại" android:textSize="15sp" android:textColor="#333333" android:layout_marginStart="12dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_phone"
+                            app:tint="@color/success" />
+
+                        <TextView
+                            android:id="@+id/txtPhone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="Số điện thoại"
+                            android:textColor="@color/text_primary"
+                            android:textSize="15sp" />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginBottom="12dp"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginBottom="12dp"
+                        android:background="@color/border" />
 
-                    <TextView android:id="@+id/txtPetName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tên thú cưng: Max" android:textSize="16sp" android:textStyle="bold" android:textColor="#111111"/>
+                    <TextView
+                        android:id="@+id/txtPetName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tên thú cưng: Max"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
                 </LinearLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- TIME CARD -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/PetCare.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="1dp"
-                app:strokeColor="#EEEEEE"
-                app:strokeWidth="1dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -118,33 +171,69 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
                         android:text="Thời gian &amp; Địa điểm"
-                        android:textColor="#888888"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="12dp"/>
+                        android:textStyle="bold" />
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
-                        <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_clock" app:tint="#FF9800"/>
-                        <TextView android:id="@+id/txtTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="10:00 - 24/05/2026" android:textSize="15sp" android:textColor="#333333" android:layout_marginStart="12dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_clock"
+                            app:tint="@color/pet_secondary" />
+
+                        <TextView
+                            android:id="@+id/txtTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="10:00 - 24/05/2026"
+                            android:textColor="@color/text_primary"
+                            android:textSize="15sp" />
                     </LinearLayout>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                        <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_location_outline" app:tint="#E91E63"/>
-                        <TextView android:id="@+id/txtBranch" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chi nhánh..." android:textSize="15sp" android:textColor="#333333" android:layout_marginStart="12dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_location_outline"
+                            app:tint="@color/danger" />
+
+                        <TextView
+                            android:id="@+id/txtBranch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="Chi nhánh..."
+                            android:textColor="@color/text_primary"
+                            android:textSize="15sp" />
                     </LinearLayout>
+
                 </LinearLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- SERVICE CARD -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/PetCare.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="1dp"
-                app:strokeColor="#EEEEEE"
-                app:strokeWidth="1dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -155,53 +244,62 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:text="Dịch vụ yêu cầu"
-                        android:textColor="#888888"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="8dp"/>
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/txtServices"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
                         android:text="Khám tổng quát, Spa..."
-                        android:textColor="#333333"
-                        android:textSize="15sp"
-                        android:layout_marginBottom="12dp"/>
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp" />
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginBottom="12dp"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginBottom="12dp"
+                        android:background="@color/border" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Tổng tạm tính:"
-                            android:textColor="#555555"
-                            android:textSize="15sp"/>
+                            android:textColor="@color/text_secondary"
+                            android:textSize="15sp" />
+
                         <TextView
                             android:id="@+id/txtTotalPrice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0 đ"
-                            android:textColor="#D32F2F"
+                            android:textColor="@color/danger"
                             android:textSize="18sp"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
                     </LinearLayout>
+
                 </LinearLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- NOTE -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="#FFF9C4"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/success_bg"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="0dp"
-                android:layout_marginBottom="16dp">
+                app:cardElevation="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -212,47 +310,51 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
                         android:text="Ghi chú của khách:"
-                        android:textStyle="bold"
-                        android:textColor="#F57F17"
+                        android:textColor="@color/success"
                         android:textSize="13sp"
-                        android:layout_marginBottom="4dp"/>
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/txtNote"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Không có ghi chú"
-                        android:textColor="#333333"/>
+                        android:textColor="@color/text_primary" />
+
                 </LinearLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- REJECT -->
             <TextView
                 android:id="@+id/txtRejectReason"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Lý do từ chối: ..."
-                android:visibility="gone"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_error"
                 android:padding="12dp"
-                android:background="#FFEBEE"
-                android:textColor="#D32F2F"
+                android:text="Lý do từ chối: ..."
+                android:textColor="@color/error"
                 android:textStyle="italic"
-                android:layout_marginBottom="16dp"/>
+                android:visibility="gone" />
 
         </LinearLayout>
+
     </ScrollView>
 
+    <!-- ACTION BUTTONS -->
     <LinearLayout
         android:id="@+id/layoutActionButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@android:color/white"
+        android:background="@color/surface"
         android:elevation="8dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Group 1 -->
+        <!-- APPROVE / REJECT -->
         <LinearLayout
             android:id="@+id/layoutDuyetHuy"
             android:layout_width="match_parent"
@@ -260,43 +362,42 @@
             android:orientation="horizontal"
             android:visibility="gone">
 
-            <!-- TỪ CHỐI -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnTuChoi"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="54dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
                 android:text="Từ chối"
                 android:textAllCaps="false"
-                android:textColor="#D32F2F"
+                android:textColor="@color/danger"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:cornerRadius="12dp"
-                app:strokeColor="#D32F2F"
+                app:strokeColor="@color/danger"
                 app:strokeWidth="2dp" />
 
-            <!-- XÁC NHẬN -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnXacNhan"
+                style="@style/PetCare.Button.Primary"
                 android:layout_width="0dp"
                 android:layout_height="54dp"
-                android:layout_weight="1"
                 android:layout_marginStart="8dp"
+                android:layout_weight="1"
                 android:text="Duyệt lịch"
                 android:textAllCaps="false"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/white"
-                app:backgroundTint="#4CAF50"
+                app:backgroundTint="@color/success"
                 app:cornerRadius="12dp" />
 
         </LinearLayout>
 
-        <!-- Group 2 -->
+        <!-- START -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBatDauThucHien"
+            style="@style/PetCare.Button.Primary"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:layout_marginTop="12dp"
@@ -304,14 +405,14 @@
             android:textAllCaps="false"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:textColor="@android:color/white"
-            app:backgroundTint="#FF9800"
+            app:backgroundTint="@color/pet_secondary"
             app:cornerRadius="12dp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
-        <!-- Group 3 -->
+        <!-- UPDATE -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCapNhatBenhAn"
+            style="@style/PetCare.Button.Primary"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:layout_marginTop="12dp"
@@ -319,13 +420,14 @@
             android:textAllCaps="false"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:textColor="@android:color/white"
-            app:backgroundTint="#2E64FE"
+            app:backgroundTint="@color/primary"
             app:cornerRadius="12dp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
+        <!-- COMPLETE -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnHoanTatNhanh"
+            style="@style/PetCare.Button.Primary"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:layout_marginTop="12dp"
@@ -333,10 +435,10 @@
             android:textAllCaps="false"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:textColor="@android:color/white"
-            app:backgroundTint="#4CAF50"
+            app:backgroundTint="@color/success"
             app:cornerRadius="12dp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
     </LinearLayout>
+
 </LinearLayout>
