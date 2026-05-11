@@ -5,56 +5,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#2E64FE"
+    android:background="@color/background"
     tools:context=".ui.auth.DangKyActivity">
 
-    <LinearLayout
-        android:id="@+id/headerLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tvRegisterTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_marginTop="50dp"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/ic_person"
-            app:tint="@android:color/white"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TẠO TÀI KHOẢN"
-            android:textColor="@android:color/white"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tham gia cộng đồng Pet Care"
-            android:textColor="#BBDEFB"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp"/>
-    </LinearLayout>
+        android:layout_marginTop="80dp"
+        android:text="TẠO TÀI KHOẢN"
+        android:textColor="@color/text_primary"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
+        android:layout_marginHorizontal="32dp"
         android:layout_marginTop="32dp"
-        android:layout_marginBottom="32dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="8dp"
+        style="@style/PetCare.Card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerLayout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.3">
+        app:layout_constraintTop_toBottomOf="@id/tvRegisterTitle">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -62,105 +37,114 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxCornerRadiusBottomEnd="12dp" app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusTopEnd="12dp" app:boxCornerRadiusTopStart="12dp"
-                app:boxStrokeColor="#BDBDBD"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
+                android:text="Pet Care"
+                android:textColor="@color/primary"
+                android:textSize="26sp"
+                android:textStyle="bold"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/PetCare.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtFullName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Họ và tên"
                     android:inputType="textPersonName"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/PetCare.Input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxCornerRadiusBottomEnd="12dp" app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusTopEnd="12dp" app:boxCornerRadiusTopStart="12dp"
-                app:boxStrokeColor="#BDBDBD"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="16dp">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Email"
                     android:inputType="textEmailAddress"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/PetCare.Input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxCornerRadiusBottomEnd="12dp" app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusTopEnd="12dp" app:boxCornerRadiusTopStart="12dp"
-                app:boxStrokeColor="#BDBDBD"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="16dp">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Số điện thoại"
                     android:inputType="phone"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/PetCare.Input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxCornerRadiusBottomEnd="12dp" app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusTopEnd="12dp" app:boxCornerRadiusTopStart="12dp"
-                app:boxStrokeColor="#BDBDBD"
-                app:passwordToggleEnabled="true">
+                app:endIconMode="password_toggle">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Mật khẩu"
                     android:inputType="textPassword"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
             </com.google.android.material.textfield.TextInputLayout>
-            
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRegister"
-                android:layout_width="match_parent"
+                style="@style/PetCare.Button.Primary"
+                android:layout_width="180dp"
                 android:layout_height="55dp"
+                android:layout_gravity="center"
                 android:layout_marginTop="24dp"
-                android:text="Đăng ký tài khoản"
+                android:text="Đăng ký"
                 android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:backgroundTint="#2E64FE"
-                app:cornerRadius="12dp" />
+                android:textSize="18sp"
+                android:textStyle="bold"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="24dp"
                 android:gravity="center"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Đã có tài khoản? "
-                    android:textColor="#757575"
-                    android:textSize="14sp" />
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"/>
+
                 <TextView
                     android:id="@+id/tvLogin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Đăng nhập ngay"
-                    android:textColor="#2E64FE"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold"/>
             </LinearLayout>
 
         </LinearLayout>
+
     </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
