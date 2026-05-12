@@ -65,7 +65,7 @@
         <activity android:name=".ui.user.ULichHenActivity" />
         <activity android:name=".ui.admin.ANguoiDungActivity" />
         <activity android:name=".ui.admin.lichhen.AdminCapNhatBenhAnActivity" />
-
+        <activity android:name=".ui.user.LichSuActivity"/>
 
         <activity
             android:name=".ui.user.UCaiDatActivity"

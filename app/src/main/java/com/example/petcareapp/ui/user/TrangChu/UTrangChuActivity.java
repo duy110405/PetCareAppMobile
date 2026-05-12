@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.petcareapp.R;
 import com.example.petcareapp.ui.user.LichHen.AddLichHenActivity;
+import com.example.petcareapp.ui.user.LichSuActivity;
 import com.example.petcareapp.ui.user.Pet.AddPetActivity;
 import com.example.petcareapp.ui.user.Pet.PetAdapter;
 import com.example.petcareapp.ui.user.Pet.PetDetailActivity;
@@ -31,14 +32,14 @@ public class UTrangChuActivity extends AppCompatActivity {
     private PetViewModel viewModel;
     private TextView tvPetCount, tvUserName;
     private MaterialButton btnAddPet;
-    private MaterialCardView cardDatLichKham, cardDaoChoi;
+    private MaterialCardView cardDatLichKham, cardDaoChoi, cardLichSu;
     private LightSensorHelper lightSensorHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_trang_chu);
-
+        cardLichSu = findViewById(R.id.cardLichSu);
 
         // 1. Ánh xạ các View từ Layout
         rvPets = findViewById(R.id.rvPets);
@@ -104,6 +105,12 @@ public class UTrangChuActivity extends AppCompatActivity {
         if (cardDaoChoi != null) {
             cardDaoChoi.setOnClickListener(v -> {
                 //startActivity(new Intent(UTrangChuActivity.this, UDaoChoiActivity.class));
+            });
+        }
+
+        if (cardLichSu != null) {
+            cardLichSu.setOnClickListener(v -> {
+                startActivity(new Intent(UTrangChuActivity.this, LichSuActivity.class));
             });
         }
 
